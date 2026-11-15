@@ -54,6 +54,14 @@
 
 /* Статичное мягкое свечение не выходит за границы области колеса. */
 @layer components {
+  .wheel-sector-focus {
+    opacity: 0;
+  }
+
+  .wheel-sector:focus-visible .wheel-sector-focus {
+    opacity: 1;
+  }
+
   .wheel-preview-glow {
     background: radial-gradient(
       circle at center,

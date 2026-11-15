@@ -12,9 +12,23 @@
     "description": "The right tools, at the right moment. A radial menu that adapts to your workflow.",
     "availability": "Coming soon",
     "wheel": {
-      "title": "Radial menu preview",
-      "description": "A static illustration with eight sectors. The icons are illustrative and do not describe available app actions.",
-      "caption": "Preview visualization"
+      "title": "Interactive radial menu demo",
+      "description": "Choose a sector to preview an illustrative action. This demo does not execute commands or describe confirmed app features.",
+      "caption": "Demo · Illustrative actions",
+      "hint": "Hover, tap, or use the arrow keys",
+      "keyboardHint": "Tab to enter or leave the wheel. Arrow keys move between sectors. Home and End move to the first and last sector. Enter or Space previews an action. Escape clears the selection. Pressing outside the wheel also clears the selection.",
+      "actionLabel": "{{action}} — demo",
+      "demoLabel": "Demo",
+      "actions": {
+        "select": "Select",
+        "copy": "Copy",
+        "paste": "Paste",
+        "cut": "Cut",
+        "folder": "Folder",
+        "search": "Search",
+        "settings": "Settings",
+        "undo": "Undo"
+      }
     }
   },
   "languageSwitcher": {
