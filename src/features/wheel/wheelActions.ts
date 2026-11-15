@@ -8,6 +8,14 @@ import {
   Settings2,
   Undo2,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import type { ParseKeys } from 'i18next'
+
+export type WheelAction = {
+  id: string
+  labelKey: ParseKeys
+  icon: LucideIcon
+}
 
 // Это примеры для демонстрации, а не список функций приложения.
 // Порядок элементов определяет их расположение по часовой стрелке.
@@ -20,4 +28,4 @@ export const wheelActions = [
   { id: 'search', labelKey: 'hero.wheel.actions.search', icon: Search },
   { id: 'settings', labelKey: 'hero.wheel.actions.settings', icon: Settings2 },
   { id: 'undo', labelKey: 'hero.wheel.actions.undo', icon: Undo2 },
-] as const
+] as const satisfies readonly WheelAction[]

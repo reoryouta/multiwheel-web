@@ -13,6 +13,56 @@
     "availability": "Coming soon",
     "wheel": {
       "title": "Interactive radial menu demo",
+      "profileTitle": "Demo profile: {{profile}}",
+      "profiles": {
+        "label": "Demo application profiles",
+        "windows": {
+          "name": "Windows",
+          "description": "A conceptual example of everyday actions."
+        },
+        "figma": {
+          "name": "Figma",
+          "description": "A conceptual example of actions for design work.",
+          "actions": {
+            "frame": "Frame",
+            "component": "Component",
+            "autoLayout": "Auto layout",
+            "align": "Align",
+            "group": "Group",
+            "duplicate": "Duplicate",
+            "zoom": "Zoom",
+            "export": "Export"
+          }
+        },
+        "vscode": {
+          "name": "VS Code",
+          "description": "A conceptual example of actions for coding.",
+          "actions": {
+            "find": "Find",
+            "files": "Files",
+            "terminal": "Terminal",
+            "format": "Format",
+            "run": "Run",
+            "refactor": "Refactor",
+            "comment": "Comment",
+            "git": "Git"
+          }
+        },
+        "photoshop": {
+          "name": "Photoshop",
+          "description": "A conceptual example of actions for image editing.",
+          "actions": {
+            "brush": "Brush",
+            "eraser": "Eraser",
+            "crop": "Crop",
+            "layers": "Layers",
+            "selection": "Select",
+            "eyedropper": "Eyedropper",
+            "mask": "Mask",
+            "export": "Export"
+          }
+        }
+      },
       "description": "Choose a sector to preview an illustrative action. This demo does not execute commands or describe confirmed app features.",
       "caption": "Demo · Illustrative actions",
       "hint": "Hover, tap, or use the arrow keys",

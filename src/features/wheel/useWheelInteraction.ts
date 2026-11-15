@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type SVGProps } from 'react'
 
 export function useWheelInteraction(sectorIds: readonly string[]) {
-  const rootRef = useRef<HTMLElement>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
   const sectorRefs = useRef(new Map<string, SVGGElement>())
   const hoveredId = useRef<string | null>(null)
   const focusedId = useRef<string | null>(null)
