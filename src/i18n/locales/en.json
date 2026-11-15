@@ -1,0 +1,11 @@
+{
+  "app": {
+    "name": "Multiwheel"
+  },
+  "home": {
+    "description": "A contextual radial menu for Windows. Open it with a hotkey to quickly access actions for the currently active application."
+  },
+  "languageSwitcher": {
+    "label": "Site language"
+  }
+}
