@@ -1,12 +1,53 @@
 @import "tailwindcss";
 
+/* Основные настройки фирменного стиля меняются здесь. */
+:root {
+  color-scheme: dark;
+  --background: #09090b;
+  --surface: #18181f;
+  --accent: #8b5cf6;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --border: color-mix(in srgb, var(--text-primary) 12%, transparent);
+  --control-radius: 0.625rem;
+  --site-width: 76rem;
+}
+
+/* Связываем CSS-переменные с понятными классами Tailwind. */
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-accent: var(--accent);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-border: var(--border);
+  --radius-control: var(--control-radius);
+}
+
 @layer base {
   body {
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
-    background: white;
-    color: var(--color-slate-900);
+    background: var(--background);
+    color: var(--text-primary);
     font-family: system-ui, sans-serif;
   }
+
+  :where(a, button):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--text-primary);
+  }
+}
+
+@utility site-container {
+  width: 100%;
+  max-width: var(--site-width);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
 }

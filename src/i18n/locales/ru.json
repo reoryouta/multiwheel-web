@@ -7,5 +7,19 @@
   },
   "languageSwitcher": {
     "label": "Язык сайта"
+  },
+  "header": {
+    "brand": "multiwheel",
+    "navigation": {
+      "label": "Основная навигация",
+      "features": "Возможности",
+      "howItWorks": "Как это работает",
+      "faq": "FAQ",
+      "comingSoon": "Скоро"
+    },
+    "download": "Скачать",
+    "downloadUnavailable": "Установщик пока недоступен",
+    "openMenu": "Открыть меню",
+    "closeMenu": "Закрыть меню"
   }
 }

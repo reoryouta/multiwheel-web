@@ -7,5 +7,19 @@
   },
   "languageSwitcher": {
     "label": "Site language"
+  },
+  "header": {
+    "brand": "multiwheel",
+    "navigation": {
+      "label": "Main navigation",
+      "features": "Features",
+      "howItWorks": "How it works",
+      "faq": "FAQ",
+      "comingSoon": "Soon"
+    },
+    "download": "Download",
+    "downloadUnavailable": "Installer not available yet",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   }
 }

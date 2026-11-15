@@ -15,7 +15,7 @@ export function HomePage() {
       <h1 id="home-title" className="text-4xl font-semibold tracking-tight sm:text-5xl">
         {t('app.name')}
       </h1>
-      <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-600">
+      <p className="mt-6 max-w-2xl text-lg leading-relaxed text-secondary">
         {t('home.description')}
       </p>
     </motion.section>

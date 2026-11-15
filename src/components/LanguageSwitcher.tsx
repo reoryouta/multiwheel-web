@@ -9,22 +9,24 @@ export function LanguageSwitcher() {
     <div
       role="group"
       aria-label={t('languageSwitcher.label')}
-      className="flex items-center gap-2"
+      className="flex min-h-10 items-center gap-2"
     >
-      <Languages size={20} aria-hidden="true" className="mr-1 text-slate-600" />
-      {languages.map(({ code, label, name }) => (
-        <button
-          key={code}
-          type="button"
-          lang={code}
-          aria-label={name}
-          aria-pressed={i18n.resolvedLanguage === code}
-          onClick={() => void i18n.changeLanguage(code)}
-          className="cursor-pointer rounded-md border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 aria-pressed:border-slate-900 aria-pressed:bg-slate-900 aria-pressed:text-white"
-        >
-          {label}
-        </button>
-      ))}
+      <Languages size={18} aria-hidden="true" className="text-secondary" />
+      <div className="flex rounded-control border border-border bg-surface p-1">
+        {languages.map(({ code, label, name }) => (
+          <button
+            key={code}
+            type="button"
+            lang={code}
+            aria-label={name}
+            aria-pressed={i18n.resolvedLanguage === code}
+            onClick={() => void i18n.changeLanguage(code)}
+            className="min-h-8 cursor-pointer rounded-md px-2.5 text-xs font-medium text-secondary hover:text-primary aria-pressed:bg-accent/20 aria-pressed:text-primary"
+          >
+            {label}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
