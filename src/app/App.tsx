@@ -6,7 +6,7 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <Header />
-      <main className="site-container py-16 sm:py-24">
+      <main className="site-container">
         <HomePage />
       </main>
     </MotionConfig>

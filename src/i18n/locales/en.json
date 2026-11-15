@@ -5,6 +5,18 @@
   "home": {
     "description": "A contextual radial menu for Windows. Open it with a hotkey to quickly access actions for the currently active application."
   },
+  "hero": {
+    "platform": "Designed for Windows",
+    "titleLineOne": "Your workflow.",
+    "titleLineTwo": "One wheel away.",
+    "description": "The right tools, at the right moment. A radial menu that adapts to your workflow.",
+    "availability": "Coming soon",
+    "wheel": {
+      "title": "Radial menu preview",
+      "description": "A static illustration with eight sectors. The icons are illustrative and do not describe available app actions.",
+      "caption": "Preview visualization"
+    }
+  },
   "languageSwitcher": {
     "label": "Site language"
   },

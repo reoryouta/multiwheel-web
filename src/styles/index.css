@@ -27,7 +27,7 @@
 @layer base {
   body {
     margin: 0;
-    min-width: 320px;
+    min-width: 0;
     min-height: 100vh;
     background: var(--background);
     color: var(--text-primary);
@@ -50,4 +50,16 @@
   max-width: var(--site-width);
   margin-inline: auto;
   padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+/* Статичное мягкое свечение не выходит за границы области колеса. */
+@layer components {
+  .wheel-preview-glow {
+    background: radial-gradient(
+      circle at center,
+      color-mix(in srgb, var(--accent) 17%, transparent) 0%,
+      color-mix(in srgb, var(--accent) 7%, transparent) 45%,
+      transparent 72%
+    );
+  }
 }
