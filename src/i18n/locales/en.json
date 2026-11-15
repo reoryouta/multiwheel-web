@@ -2,6 +2,16 @@
   "app": {
     "name": "Multiwheel"
   },
+  "scroll": {
+    "continue": "Scroll to explore"
+  },
+  "philosophy": {
+    "eyebrow": "01 — PHILOSOPHY",
+    "titleLineOne": "Less clicking.",
+    "titleLineTwo": "More freedom.",
+    "descriptionLineOne": "Stop searching for the right tools.",
+    "descriptionLineTwo": "Stay focused on your work."
+  },
   "home": {
     "description": "A contextual radial menu for Windows. Open it with a hotkey to quickly access actions for the currently active application."
   },

@@ -7,13 +7,14 @@ import { WheelView } from './WheelView'
 type ProfileWheelProps = {
   profile: WheelProfile
   hintId: string
+  interactive?: boolean
 }
 
-export function ProfileWheel({ profile, hintId }: ProfileWheelProps) {
+export function ProfileWheel({ profile, hintId, interactive = true }: ProfileWheelProps) {
   const { t } = useTranslation()
   const isPresent = useIsPresent()
   const shouldReduceMotion = useReducedMotion()
-  const { rootRef, activeId, getSectorProps } = useWheelInteraction(profile.actions.map(({ id }) => id))
+  const { rootRef, activeId, getSectorProps } = useWheelInteraction(profile.actions.map(({ id }) => id), interactive)
   const actions = profile.actions.map((action) => ({
     ...action,
     label: t(action.labelKey),
@@ -24,8 +25,8 @@ export function ProfileWheel({ profile, hintId }: ProfileWheelProps) {
     <motion.div
       ref={rootRef}
       data-profile-id={profile.id}
-      aria-hidden={!isPresent}
-      inert={!isPresent}
+      aria-hidden={!isPresent || !interactive}
+      inert={!isPresent || !interactive}
       initial={shouldReduceMotion ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: shouldReduceMotion ? 1 : 0 }}

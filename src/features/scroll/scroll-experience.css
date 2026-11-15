@@ -1,0 +1,104 @@
+@layer components {
+  .scroll-experience {
+    --scroll-header-height: 6rem;
+  }
+
+  .scroll-stage-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: 2.5rem;
+    padding-block: 3.5rem;
+  }
+
+  .scroll-hero-copy,
+  .scroll-wheel-anchor,
+  .scroll-philosophy-copy {
+    min-width: 0;
+  }
+
+  .scroll-wheel-motion {
+    transform-origin: center;
+  }
+
+  .scroll-philosophy-copy {
+    padding-block: clamp(5rem, 15svh, 10rem);
+  }
+
+  @media (min-width: 640px) {
+    .scroll-stage-content {
+      gap: 3.5rem;
+      padding-block: 5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .scroll-stage-content {
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+      column-gap: 2rem;
+    }
+
+    .scroll-hero-copy {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .scroll-wheel-anchor {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .scroll-indicator {
+      grid-column: 1 / -1;
+    }
+
+    .scroll-philosophy-copy {
+      grid-column: 2;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .scroll-stage-content {
+      column-gap: 3rem;
+    }
+  }
+
+  .scroll-experience--enhanced .scroll-track {
+    height: calc(100svh + var(--scroll-distance));
+  }
+
+  .scroll-experience--enhanced .scroll-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+  }
+
+  .scroll-experience--enhanced .scroll-stage-content {
+    position: relative;
+    height: calc(100svh - var(--scroll-header-height) - 1px);
+    row-gap: 0;
+    padding-block: clamp(1.25rem, calc((100svh - 47rem) / 2), 5rem);
+  }
+
+  .scroll-experience--enhanced .scroll-wheel-anchor figure {
+    max-width: min(32rem, calc(100svh - 17rem));
+  }
+
+  .scroll-experience--enhanced .scroll-wheel-anchor {
+    z-index: 2;
+  }
+
+  .scroll-experience--enhanced .scroll-philosophy-copy {
+    grid-column: 2;
+    grid-row: 1;
+    padding-block: 0;
+  }
+
+  .scroll-experience--enhanced .scroll-indicator {
+    position: absolute;
+    right: 0;
+    bottom: 0.5rem;
+    left: 0;
+    pointer-events: none;
+  }
+}

@@ -1,5 +1,5 @@
-import { HeroSection } from '../components/HeroSection'
+import { ScrollExperience } from '../features/scroll/ScrollExperience'
 
 export function HomePage() {
-  return <HeroSection />
+  return <ScrollExperience />
 }

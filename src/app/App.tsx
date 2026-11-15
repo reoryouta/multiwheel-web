@@ -6,7 +6,7 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <Header />
-      <main className="site-container">
+      <main>
         <HomePage />
       </main>
     </MotionConfig>

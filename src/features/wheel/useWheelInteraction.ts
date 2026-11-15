@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type SVGProps } from 'react'
 
-export function useWheelInteraction(sectorIds: readonly string[]) {
+export function useWheelInteraction(sectorIds: readonly string[], enabled = true) {
   const rootRef = useRef<HTMLDivElement>(null)
   const sectorRefs = useRef(new Map<string, SVGGElement>())
   const hoveredId = useRef<string | null>(null)
@@ -10,6 +10,15 @@ export function useWheelInteraction(sectorIds: readonly string[]) {
 
   // Только один сектор входит в обычный порядок Tab. Остальные доступны стрелками.
   const currentTabStop = sectorIds.includes(tabStopId) ? tabStopId : sectorIds[0]
+
+  useEffect(() => {
+    if (enabled) return
+    hoveredId.current = null
+    focusedId.current = null
+    setActiveId(null)
+    const element = document.activeElement
+    if (element instanceof SVGElement && rootRef.current?.contains(element)) element.blur()
+  }, [enabled])
 
   useEffect(() => {
     function clearOutside(event: PointerEvent) {
@@ -30,19 +39,20 @@ export function useWheelInteraction(sectorIds: readonly string[]) {
         if (node) sectorRefs.current.set(id, node)
         else sectorRefs.current.delete(id)
       },
-      tabIndex: id === currentTabStop ? 0 : -1,
+      tabIndex: enabled && id === currentTabStop ? 0 : -1,
       onPointerEnter: (event) => {
         // Touch создаёт pointerenter перед нажатием: не считаем его наведением.
-        if (event.pointerType === 'touch') return
+        if (!enabled || event.pointerType === 'touch') return
         hoveredId.current = id
         setActiveId(id)
       },
       onPointerLeave: (event) => {
-        if (event.pointerType === 'touch') return
+        if (!enabled || event.pointerType === 'touch') return
         hoveredId.current = null
         setActiveId(focusedId.current)
       },
       onFocus: () => {
+        if (!enabled) return
         focusedId.current = id
         setTabStopId(id)
         setActiveId(id)
@@ -52,6 +62,7 @@ export function useWheelInteraction(sectorIds: readonly string[]) {
         setActiveId(hoveredId.current)
       },
       onClick: (event) => {
+        if (!enabled) return
         // Явный фокус нужен в том числе для SVG-кнопок на сенсорных экранах.
         event.currentTarget.focus({ preventScroll: true })
         focusedId.current = id
@@ -59,6 +70,7 @@ export function useWheelInteraction(sectorIds: readonly string[]) {
         setActiveId(id)
       },
       onKeyDown: (event) => {
+        if (!enabled) return
         if (event.key === 'Escape') {
           event.preventDefault()
           hoveredId.current = null
@@ -107,7 +119,7 @@ export function useWheelInteraction(sectorIds: readonly string[]) {
 
   return {
     rootRef,
-    activeId: activeId && sectorIds.includes(activeId) ? activeId : null,
+    activeId: enabled && activeId && sectorIds.includes(activeId) ? activeId : null,
     getSectorProps,
   }
 }

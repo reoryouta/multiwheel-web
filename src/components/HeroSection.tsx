@@ -1,7 +1,6 @@
 import { AppWindow } from 'lucide-react'
 import { motion, useReducedMotion, type Variants } from 'motion/react'
 import { useTranslation } from 'react-i18next'
-import { WheelPreview } from './WheelPreview'
 
 const reveal: Variants = {
   hidden: { opacity: 0, y: 14 },
@@ -26,7 +25,7 @@ export function HeroSection() {
       initial={shouldReduceMotion ? false : 'hidden'}
       animate="visible"
       variants={sequence}
-      className="grid min-h-[calc(100svh-6rem-1px)] items-center gap-10 py-14 sm:gap-14 sm:py-20 lg:grid-cols-[1.08fr_1fr] lg:gap-8 xl:gap-12"
+      className="min-w-0"
     >
       <motion.div variants={sequence} className="min-w-0">
         <motion.p
@@ -59,9 +58,6 @@ export function HeroSection() {
         </motion.p>
       </motion.div>
 
-      <motion.div variants={reveal} className="min-w-0">
-        <WheelPreview />
-      </motion.div>
     </motion.section>
   )
 }
