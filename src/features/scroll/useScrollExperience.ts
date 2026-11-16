@@ -25,6 +25,8 @@ export function useScrollExperience() {
   const wheelX = useTransform(() => travelX.get() * movement.get())
   const wheelY = useTransform(() => centerYCorrection.get() * movement.get())
   const wheelScale = useTransform(movement, [0, 1], [1, config.wheelEndScale])
+  // Текстовый слой компенсирует этот масштаб через CSS, без React-рендеров на кадрах прокрутки.
+  const inverseWheelScale = useTransform(wheelScale, (scale) => 1 / scale)
   const heroOpacity = useTransform(scrollYProgress, [...config.heroFade], [1, 0])
   const heroY = useTransform(scrollYProgress, [...config.heroFade], [0, -32])
   const philosophyOpacity = useTransform(scrollYProgress, [...config.philosophyFade], [0, 1])
@@ -84,7 +86,9 @@ export function useScrollExperience() {
     trackRef, heroRef, wheelAnchorRef, wheelVisualRef, enhanced,
     state: enhanced ? sceneState : flowSceneState,
     heroStyle: enhanced ? { opacity: heroOpacity, y: heroY } : { opacity: 1, y: 0 },
-    wheelStyle: enhanced ? { x: wheelX, y: wheelY, scale: wheelScale } : { x: 0, y: 0, scale: 1 },
+    wheelStyle: enhanced
+      ? { x: wheelX, y: wheelY, scale: wheelScale, '--wheel-inverse-scale': inverseWheelScale }
+      : { x: 0, y: 0, scale: 1, '--wheel-inverse-scale': 1 },
     philosophyStyle: enhanced ? { opacity: philosophyOpacity, y: philosophyY } : { opacity: 1, y: 0 },
     controlsStyle: enhanced ? { opacity: controlsOpacity } : { opacity: 1 },
     indicatorStyle: enhanced ? { opacity: indicatorOpacity } : { opacity: 1 },

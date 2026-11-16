@@ -1,0 +1,52 @@
+@layer components {
+  .wheel-view {
+    container-type: inline-size;
+  }
+
+  .wheel-center {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: max(0.625cqw, calc(0.125rem * var(--wheel-inverse-scale, 1)));
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    text-align: center;
+  }
+
+  .wheel-center-icon {
+    width: 6.666667cqw;
+    height: 6.666667cqw;
+    flex: none;
+    color: var(--accent);
+  }
+
+  .wheel-center-action,
+  .wheel-center-brand,
+  .wheel-center-demo {
+    margin: 0;
+    line-height: 1.2;
+    font-weight: 400;
+  }
+
+  .wheel-center-action {
+    width: 82%;
+    /* 16 единиц исходного SVG; минимум 12 px при стандартном размере шрифта браузера. */
+    font-size: max(3.333333cqw, calc(0.75rem * var(--wheel-inverse-scale, 1)));
+    overflow-wrap: anywhere;
+    hyphens: auto;
+    text-wrap: balance;
+    color: var(--text-primary);
+  }
+
+  .wheel-center-brand {
+    font-size: max(2.083333cqw, calc(0.625rem * var(--wheel-inverse-scale, 1)));
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+  }
+
+  .wheel-center-demo {
+    font-size: max(1.666667cqw, calc(0.625rem * var(--wheel-inverse-scale, 1)));
+    color: var(--text-secondary);
+  }
+}
