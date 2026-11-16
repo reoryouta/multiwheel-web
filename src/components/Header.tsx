@@ -1,17 +1,21 @@
 import { useState } from 'react'
 import { Aperture, Download, Menu, X } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { LanguageSwitcher } from './LanguageSwitcher'
+import { LocalizedText } from './LocalizedText'
+import { controlTransitions, microControlStyle, useMotionPreference } from '../lib/microMotion'
 
 export function Header() {
   const { t } = useTranslation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const reduceMotion = useMotionPreference()
 
   const navigationItems = [
-    t('header.navigation.features'),
-    t('header.navigation.howItWorks'),
-    t('header.navigation.faq'),
-  ]
+    'header.navigation.features',
+    'header.navigation.howItWorks',
+    'header.navigation.faq',
+  ] as const
 
   return (
     <header className="border-b border-border bg-background">
@@ -25,16 +29,19 @@ export function Header() {
           </span>
         </div>
 
-        <button
+        <motion.button
           type="button"
           aria-label={t(isMenuOpen ? 'header.closeMenu' : 'header.openMenu')}
           aria-expanded={isMenuOpen}
           aria-controls="header-content"
           onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
-          className="flex size-11 cursor-pointer items-center justify-center rounded-control border border-border bg-surface text-primary hover:border-accent/50 lg:hidden"
+          whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+          transition={controlTransitions(reduceMotion)}
+          style={microControlStyle}
+          className="micro-control flex size-11 cursor-pointer items-center justify-center rounded-control border border-border bg-surface text-primary hover:border-accent/50 lg:hidden"
         >
           {isMenuOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
-        </button>
+        </motion.button>
 
         <div
           id="header-content"
@@ -49,7 +56,7 @@ export function Header() {
               {navigationItems.map((item) => (
                 <li key={item}>
                   {/* Разделов пока нет: это текст, а не ссылки. */}
-                  <span>{item}</span>
+                  <LocalizedText textKey={item} />
                 </li>
               ))}
             </ul>
@@ -57,7 +64,7 @@ export function Header() {
               id="navigation-status"
               className="w-fit rounded-full border border-border px-2 py-0.5 text-xs text-secondary"
             >
-              {t('header.navigation.comingSoon')}
+              <LocalizedText textKey="header.navigation.comingSoon" />
             </span>
           </nav>
 
@@ -71,10 +78,10 @@ export function Header() {
                 className="flex min-h-10 cursor-not-allowed items-center justify-center gap-2 rounded-control border border-border bg-surface px-4 text-sm font-medium text-secondary"
               >
                 <Download size={16} aria-hidden="true" />
-                {t('header.download')}
+                <LocalizedText textKey="header.download" />
               </button>
               <p id="download-status" className="text-xs text-secondary">
-                {t('header.downloadUnavailable')}
+                <LocalizedText textKey="header.downloadUnavailable" />
               </p>
             </div>
           </div>

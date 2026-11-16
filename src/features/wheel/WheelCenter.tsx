@@ -1,14 +1,15 @@
-import { Aperture, type LucideIcon } from 'lucide-react'
+import { Aperture } from 'lucide-react'
 import { wheelGeometry } from './wheelGeometry'
+import type { WheelAction } from './wheelActions'
+import { LocalizedText } from '../../components/LocalizedText'
 import './wheel-center.css'
 
 type WheelCenterProps = {
-  action?: { id: string; label: string; icon: LucideIcon }
+  action?: WheelAction
   brand: string
-  demoLabel: string
 }
 
-export function WheelCenter({ action, brand, demoLabel }: WheelCenterProps) {
+export function WheelCenter({ action, brand }: WheelCenterProps) {
   const { center, centerRadius, size } = wheelGeometry
   const Icon = action?.icon ?? Aperture
 
@@ -26,9 +27,9 @@ export function WheelCenter({ action, brand, demoLabel }: WheelCenterProps) {
       <Icon className="wheel-center-icon" strokeWidth={1.25} />
       {/* Текст меняется в том же рендере, что и активный сектор, без очереди анимаций. */}
       <p className={action ? 'wheel-center-action' : 'wheel-center-brand'} data-wheel-label="">
-        {action?.label ?? brand}
+        {action ? <LocalizedText textKey={action.labelKey} /> : brand}
       </p>
-      {action && <p className="wheel-center-demo">{demoLabel}</p>}
+      {action && <p className="wheel-center-demo"><LocalizedText textKey="hero.wheel.demoLabel" /></p>}
     </div>
   )
 }

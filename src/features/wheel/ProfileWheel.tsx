@@ -41,7 +41,6 @@ export function ProfileWheel({ profile, hintId, interactive = true }: ProfileWhe
         description={`${t('hero.wheel.description')} ${t(profile.descriptionKey)}`}
         hintId={hintId}
         brand={t('header.brand')}
-        demoLabel={t('hero.wheel.demoLabel')}
       />
     </motion.div>
   )

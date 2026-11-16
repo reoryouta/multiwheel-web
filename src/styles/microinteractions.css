@@ -1,0 +1,38 @@
+@layer components {
+  .localized-region {
+    display: grid;
+    min-width: 0;
+  }
+
+  .localized-region--inline {
+    display: inline-grid;
+    max-width: 100%;
+    vertical-align: baseline;
+  }
+
+  .localized-current,
+  .localized-measure {
+    grid-area: 1 / 1;
+    min-width: 0;
+    align-self: center;
+  }
+
+  .localized-measure {
+    visibility: hidden;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .micro-control {
+    -webkit-tap-highlight-color: transparent;
+    transition-property: border-color;
+    transition-duration: var(--micro-hover-duration);
+    transition-timing-function: var(--micro-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .micro-control {
+      transition-duration: 0s;
+    }
+  }
+}

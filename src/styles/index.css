@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./microinteractions.css";
 
 /* Основные настройки фирменного стиля меняются здесь. */
 :root {

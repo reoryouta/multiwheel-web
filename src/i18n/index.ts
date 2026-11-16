@@ -8,9 +8,17 @@ export const languages = [
   { code: 'en', label: 'EN', name: 'English' },
 ] as const
 
-type Language = (typeof languages)[number]['code']
+export type Language = (typeof languages)[number]['code']
 
 const storageKey = 'multiwheel.language'
+
+export function rememberLanguage(language: Language) {
+  try {
+    localStorage.setItem(storageKey, language)
+  } catch {
+    // Переключатель работает и без сохранения в браузере.
+  }
+}
 
 function getInitialLanguage(): Language {
   // Хранилище может быть недоступно из-за настроек браузера.
@@ -32,11 +40,7 @@ i18n.on('languageChanged', (language) => {
     .querySelector<HTMLMetaElement>('meta[name="description"]')
     ?.setAttribute('content', i18n.t('home.description'))
 
-  try {
-    localStorage.setItem(storageKey, language)
-  } catch {
-    // Переключатель работает и без сохранения в браузере.
-  }
+  if (language === 'ru' || language === 'en') rememberLanguage(language)
 })
 
 void i18n.use(initReactI18next).init({

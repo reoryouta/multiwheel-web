@@ -1,21 +1,20 @@
-import type { LucideIcon } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import { useId, type SVGProps } from 'react'
 import { getSectorGeometry, wheelGeometry } from './wheelGeometry'
 import { WheelCenter } from './WheelCenter'
+import type { WheelAction } from './wheelActions'
 
 type WheelViewProps = {
-  actions: readonly { id: string; label: string; accessibleLabel: string; icon: LucideIcon }[]
+  actions: readonly (WheelAction & { label: string; accessibleLabel: string })[]
   activeId: string | null
   getSectorProps: (id: string) => SVGProps<SVGGElement>
   title: string
   description: string
   hintId: string
   brand: string
-  demoLabel: string
 }
 
-export function WheelView({ actions, activeId, getSectorProps, title, description, hintId, brand, demoLabel }: WheelViewProps) {
+export function WheelView({ actions, activeId, getSectorProps, title, description, hintId, brand }: WheelViewProps) {
   const id = useId()
   const shouldReduceMotion = useReducedMotion()
   const duration = shouldReduceMotion ? 0 : 0.14
@@ -111,7 +110,7 @@ export function WheelView({ actions, activeId, getSectorProps, title, descriptio
           <circle cx={center} cy={center} r={centerRadius} fill="var(--background)" stroke="var(--border)" />
         </g>
       </svg>
-      <WheelCenter action={activeAction} brand={brand} demoLabel={demoLabel} />
+      <WheelCenter action={activeAction} brand={brand} />
     </div>
   )
 }

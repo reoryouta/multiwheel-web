@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { ProfileSwitcher } from '../features/wheel/ProfileSwitcher'
 import { ProfileWheel } from '../features/wheel/ProfileWheel'
 import { wheelProfiles } from '../features/wheel/wheelProfiles'
+import { LocalizedText } from './LocalizedText'
 
 type WheelPreviewProps = {
   interactive?: boolean
@@ -50,9 +51,9 @@ export function WheelPreview({ interactive = true, controlsVisible = true, contr
           controlsId={wheelId}
         />
         <p aria-live="polite" className="mt-2 flex min-h-8 items-center justify-center text-balance">
-          {t(profile.descriptionKey)}
+          <LocalizedText textKey={profile.descriptionKey} />
         </p>
-        <p className="mt-1">{t('hero.wheel.hint')}</p>
+        <p className="mt-1"><LocalizedText textKey="hero.wheel.hint" /></p>
       </motion.figcaption>
       <p id={hintId} className="sr-only">{t('hero.wheel.keyboardHint')}</p>
     </figure>

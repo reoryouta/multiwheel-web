@@ -1,32 +1,33 @@
 import { Languages } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { languages } from '../i18n'
+import { useLanguageTransition } from '../i18n/useLanguageTransition'
+import { microMotion, useMotionPreference } from '../lib/microMotion'
+import { SegmentedControl } from './SegmentedControl'
 
 export function LanguageSwitcher() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
+  const { requestedLanguage, requestLanguage } = useLanguageTransition()
+  const reduceMotion = useMotionPreference()
 
   return (
-    <div
-      role="group"
-      aria-label={t('languageSwitcher.label')}
+    <motion.div
+      initial={false}
+      animate={{ color: 'var(--text-secondary)' }}
+      whileHover={{ color: 'var(--accent)' }}
+      transition={{ duration: reduceMotion ? 0 : microMotion.hover, ease: microMotion.ease }}
       className="flex min-h-10 items-center gap-2"
     >
-      <Languages size={18} aria-hidden="true" className="text-secondary" />
-      <div className="flex rounded-control border border-border bg-surface p-1">
-        {languages.map(({ code, label, name }) => (
-          <button
-            key={code}
-            type="button"
-            lang={code}
-            aria-label={name}
-            aria-pressed={i18n.resolvedLanguage === code}
-            onClick={() => void i18n.changeLanguage(code)}
-            className="min-h-8 cursor-pointer rounded-md px-2.5 text-xs font-medium text-secondary hover:text-primary aria-pressed:bg-accent/20 aria-pressed:text-primary"
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-    </div>
+      <Languages size={18} aria-hidden="true" />
+      <SegmentedControl
+        items={languages.map(({ code, label, name }) => ({ id: code, label, accessibleLabel: name, lang: code }))}
+        selectedId={requestedLanguage}
+        onSelect={(code) => requestLanguage(code === 'en' ? 'en' : 'ru')}
+        label={t('languageSwitcher.label')}
+        className="flex rounded-control border border-border bg-surface p-1"
+        buttonClassName="min-h-8 px-2.5"
+      />
+    </motion.div>
   )
 }
