@@ -5,6 +5,14 @@
   "scroll": {
     "continue": "Scroll to explore"
   },
+  "howItWorks": {
+    "press": "Press.",
+    "select": "Select.",
+    "continue": "Continue.",
+    "simpleHint": "Tap a step to preview the sequence.",
+    "keyboardHint": "Use Up, Down, Page Up, Page Down or Space for the previous and next step. Tab selects a step button. Escape leaves the scene.",
+    "skip": "Skip the demonstration"
+  },
   "philosophy": {
     "eyebrow": "01 — PHILOSOPHY",
     "titleLineOne": "Less clicking.",

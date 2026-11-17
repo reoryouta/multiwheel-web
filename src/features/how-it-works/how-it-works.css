@@ -1,0 +1,119 @@
+.how-scene {
+  position: relative;
+  padding-block: 3.5rem;
+}
+
+.how-layout {
+  display: grid;
+  align-items: center;
+  gap: 2.5rem;
+  min-width: 0;
+}
+
+.how-wheel-slot {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.how-wheel {
+  width: min(100%, 21.12rem);
+}
+
+.how-steps {
+  position: relative;
+  --step-size: clamp(2.5rem, 5.2vw, 4rem);
+}
+
+.how-step-list {
+  display: grid;
+  gap: clamp(1.75rem, 5svh, 3rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.how-step {
+  position: relative;
+  padding-left: 2rem;
+  min-width: 0;
+}
+
+.how-step-button {
+  max-width: 100%;
+  font-size: var(--step-size);
+  line-height: 1.1;
+  letter-spacing: -0.055em;
+}
+
+.how-rail {
+  position: absolute;
+  left: 0.25rem;
+  top: calc(var(--step-size) * 0.55);
+  bottom: calc(var(--step-size) * 0.55);
+  width: 1px;
+  background: var(--border);
+}
+
+.how-rail-fill {
+  height: 100%;
+  background: var(--accent);
+  transform-origin: top;
+}
+
+.how-dot {
+  position: absolute;
+  left: -0.0625rem;
+  top: calc(var(--step-size) * 0.55 - 0.3125rem);
+  width: 0.625rem;
+  height: 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+}
+
+.how-exit-space {
+  height: 30svh;
+  outline: none;
+}
+
+.how-skip:focus {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 3;
+  padding: 0.5rem 1rem;
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.how-scene--enhanced {
+  height: 100svh;
+  padding-block: 0;
+}
+
+/* Якорь остаётся в потоке: фиксация сцены не меняет высоту страницы и handoff. */
+.how-scene-track--enhanced {
+  height: 100svh;
+}
+
+.how-scene--pinned {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 3;
+}
+
+.how-scene--enhanced .how-layout {
+  height: calc(100svh - var(--scroll-header-height) - 1px);
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+  column-gap: 2rem;
+}
+
+.how-scene--enhanced .how-wheel {
+  width: min(21.12rem, calc((100svh - 17rem) * 0.66));
+}
+
+@media (min-width: 1280px) {
+  .how-scene--enhanced .how-layout {
+    column-gap: 3rem;
+  }
+}

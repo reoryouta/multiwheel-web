@@ -5,6 +5,7 @@ import { WheelCenter } from './WheelCenter'
 import type { WheelAction } from './wheelActions'
 
 type WheelViewProps = {
+  mode?: 'interactive' | 'demo'
   actions: readonly (WheelAction & { label: string; accessibleLabel: string })[]
   activeId: string | null
   getSectorProps: (id: string) => SVGProps<SVGGElement>
@@ -14,7 +15,7 @@ type WheelViewProps = {
   brand: string
 }
 
-export function WheelView({ actions, activeId, getSectorProps, title, description, hintId, brand }: WheelViewProps) {
+export function WheelView({ mode = 'interactive', actions, activeId, getSectorProps, title, description, hintId, brand }: WheelViewProps) {
   const id = useId()
   const shouldReduceMotion = useReducedMotion()
   const duration = shouldReduceMotion ? 0 : 0.14
@@ -25,7 +26,7 @@ export function WheelView({ actions, activeId, getSectorProps, title, descriptio
     <div className="wheel-view relative size-full">
       <svg
         viewBox={`0 0 ${size} ${size}`}
-        role="group"
+        role={mode === 'demo' ? 'img' : 'group'}
         aria-labelledby={`${id}-title`}
         aria-describedby={`${id}-description ${hintId}`}
         className="block size-full"
@@ -57,12 +58,12 @@ export function WheelView({ actions, activeId, getSectorProps, title, descriptio
             <g
               key={action.id}
               {...getSectorProps(action.id)}
-              role="button"
-              aria-label={action.accessibleLabel}
-              aria-describedby={hintId}
+              role={mode === 'demo' ? undefined : 'button'}
+              aria-label={mode === 'demo' ? undefined : action.accessibleLabel}
+              aria-describedby={mode === 'demo' ? undefined : hintId}
               data-sector-id={action.id}
               data-active={isActive}
-              className="wheel-sector cursor-pointer outline-none"
+              className={mode === 'demo' ? 'wheel-sector' : 'wheel-sector cursor-pointer outline-none'}
             >
               {/* Неподвижная область попадания исключает дрожание на краях при увеличении. */}
               <path d={path} fill="transparent" pointerEvents="all" />

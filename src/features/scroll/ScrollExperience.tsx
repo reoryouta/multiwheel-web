@@ -1,21 +1,28 @@
 import { motion } from 'motion/react'
-import type { CSSProperties } from 'react'
+import { useRef, useState, type CSSProperties } from 'react'
 import { HeroSection } from '../../components/HeroSection'
 import { PhilosophySection } from '../../components/PhilosophySection'
 import { WheelPreview } from '../../components/WheelPreview'
 import { ScrollIndicator } from './ScrollIndicator'
 import { scrollSceneConfig } from './scrollSceneConfig'
 import { useScrollExperience } from './useScrollExperience'
+import { HowItWorksSection } from '../how-it-works/HowItWorksSection'
+import { useWheelHandoff } from '../how-it-works/useWheelHandoff'
+import { wheelProfiles, type WheelProfile } from '../wheel/wheelProfiles'
 import './scroll-experience.css'
 
 export function ScrollExperience() {
   const scene = useScrollExperience()
+  const howRef = useRef<HTMLDivElement>(null)
+  const handoff = useWheelHandoff(howRef, scene.enhanced)
+  const [profile, setProfile] = useState<WheelProfile>(wheelProfiles[0])
+  const interactive = scene.state.interactive && !handoff.leaving
 
   return (
     <div
       className={`scroll-experience ${scene.enhanced ? 'scroll-experience--enhanced' : ''}`}
       data-scroll-mode={scene.enhanced ? 'enhanced' : 'flow'}
-      data-scroll-phase={scene.state.phase}
+      data-scroll-phase={handoff.leaving ? 'how-it-works' : scene.state.phase}
       style={{ '--scroll-distance': scrollSceneConfig.travelDistance } as CSSProperties}
     >
       <div ref={scene.trackRef} className="scroll-track">
@@ -37,12 +44,14 @@ export function ScrollExperience() {
               <motion.div
                 initial={false}
                 style={scene.wheelStyle}
-                inert={!scene.state.interactive}
+                inert={!interactive}
                 className="scroll-wheel-motion"
               >
                 <WheelPreview
                   visualRef={scene.wheelVisualRef}
-                  interactive={scene.state.interactive}
+                  interactive={interactive}
+                  visualStyle={handoff.style}
+                  onProfileChange={setProfile}
                   controlsVisible={!scene.state.controlsHidden}
                   controlsStyle={scene.controlsStyle}
                 />
@@ -70,6 +79,7 @@ export function ScrollExperience() {
           </div>
         </div>
       </div>
+      <HowItWorksSection trackRef={howRef} profile={profile} />
     </div>
   )
 }
