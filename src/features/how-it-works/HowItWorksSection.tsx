@@ -24,7 +24,7 @@ export function HowItWorksSection({ trackRef, profile }: { trackRef: RefObject<H
 
   return (
     <>
-      <div ref={trackRef} className={enhanced ? 'how-scene-track how-scene-track--enhanced' : 'how-scene-track'}>
+      <div ref={trackRef} id="how-it-works" tabIndex={-1} aria-labelledby="how-it-works-title" className={enhanced ? 'how-scene-track how-scene-track--enhanced outline-none' : 'how-scene-track outline-none'}>
         <section ref={sceneRef} aria-labelledby="how-it-works-title" aria-describedby="how-it-works-hint" className={`how-scene${enhanced ? ' how-scene--enhanced' : ''}${enhanced && pinned ? ' how-scene--pinned' : ''}`} data-how-step={step} data-how-mode={enhanced ? 'gestures' : 'simple'}>
           <h2 id="how-it-works-title" className="sr-only"><LocalizedText textKey="header.navigation.howItWorks" /></h2>
           <a href="#how-it-works-end" onClick={skipSequence} className="how-skip sr-only focus:not-sr-only"><LocalizedText textKey="howItWorks.skip" /></a>

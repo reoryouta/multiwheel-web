@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
 import { flushSync } from 'react-dom'
 import { howItWorksConfig, WheelGestureGate } from './howItWorksConfig'
+import { sectionFromHash, sectionNavigationEvent, type SectionId } from '../scroll/sectionNavigation'
 
 type ScrollSide = 'before' | 'holding' | 'after'
 
@@ -43,7 +44,7 @@ export function useHowItWorksSequence(
     let previousY = window.scrollY
     let side: ScrollSide = previousY > top ? 'after' : 'before'
     let lastWheel = -Infinity
-    let bypass = false
+    let bypass = Boolean(sectionFromHash() && sectionFromHash() !== 'how-it-works')
 
     function align() {
       // Уже поставленные браузером в очередь смещения не могут увести захваченную сцену.
@@ -79,6 +80,34 @@ export function useHowItWorksSequence(
       // Измеряется постоянный якорь, а не вынесенный в position:fixed контент.
       top = track!.getBoundingClientRect().top + window.scrollY
       if (side === 'holding') align()
+    }
+
+    function prepareNavigation(id: SectionId) {
+      const target = document.getElementById(id)
+      if (!target) return
+      if (target === track || track!.contains(target)) {
+        bypass = false
+        enter(1, false)
+        return
+      }
+      // Якорный переход не является жестом демонстрации: разрешаем пройти её границу.
+      bypass = true
+      if (side === 'holding') {
+        const beforeScene = target.compareDocumentPosition(track!) & Node.DOCUMENT_POSITION_FOLLOWING
+        release(beforeScene ? -1 : 1)
+      }
+    }
+
+    function onSectionNavigation(event: Event) {
+      prepareNavigation((event as CustomEvent<SectionId>).detail)
+    }
+
+    function onHashChange() {
+      const id = sectionFromHash()
+      if (!id) return
+      prepareNavigation(id)
+      // В том числе история браузера: восстанавливаем цель, если scroll уже пересёк сцену.
+      if (id !== 'how-it-works') document.getElementById(id)?.scrollIntoView({ behavior: 'instant', block: 'start' })
     }
 
     function onScroll() {
@@ -184,7 +213,7 @@ export function useHowItWorksSequence(
 
     function onFocusIn(event: FocusEvent) {
       const target = event.target as HTMLElement
-      if (side !== 'holding' || scene!.contains(target)) return
+      if (side !== 'holding' || track!.contains(target)) return
       // Tab и внешние ссылки могут увести фокус со сцены, не удерживая страницу.
       bypass = true
       const beforeScene = target.compareDocumentPosition(scene!) & Node.DOCUMENT_POSITION_FOLLOWING
@@ -200,13 +229,15 @@ export function useHowItWorksSequence(
     observer.observe(document.body)
     // Восстановленный адрес/scroll position тоже проходит через тот же вход.
     const initialFrame = requestAnimationFrame(() => {
-      if (Math.abs(window.scrollY - top) <= 1) enter(1, false)
+      if (!bypass && Math.abs(window.scrollY - top) <= 1) enter(1, false)
     })
     window.addEventListener('resize', measure)
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('wheel', onWheel, { passive: false })
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('focusin', onFocusIn)
+    window.addEventListener(sectionNavigationEvent, onSectionNavigation)
+    window.addEventListener('hashchange', onHashChange)
     return () => {
       cancelAnimationFrame(initialFrame)
       observer.disconnect()
@@ -217,6 +248,8 @@ export function useHowItWorksSequence(
       window.removeEventListener('wheel', onWheel)
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('focusin', onFocusIn)
+      window.removeEventListener(sectionNavigationEvent, onSectionNavigation)
+      window.removeEventListener('hashchange', onHashChange)
     }
   }, [enhanced, trackRef, sceneRef, selectStep])
 

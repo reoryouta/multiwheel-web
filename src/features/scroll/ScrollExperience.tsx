@@ -8,6 +8,7 @@ import { scrollSceneConfig } from './scrollSceneConfig'
 import { useScrollExperience } from './useScrollExperience'
 import { HowItWorksSection } from '../how-it-works/HowItWorksSection'
 import { ContextExperience } from '../context/ContextExperience'
+import { FinalScreen } from '../final/FinalScreen'
 import { useWheelHandoff } from '../how-it-works/useWheelHandoff'
 import { wheelProfiles, type WheelProfile } from '../wheel/wheelProfiles'
 import './scroll-experience.css'
@@ -26,7 +27,7 @@ export function ScrollExperience() {
       data-scroll-phase={handoff.leaving ? 'how-it-works' : scene.state.phase}
       style={{ '--scroll-distance': scrollSceneConfig.travelDistance } as CSSProperties}
     >
-      <div ref={scene.trackRef} className="scroll-track">
+      <div ref={scene.trackRef} id="about" tabIndex={-1} aria-labelledby="hero-title" className="scroll-track outline-none">
         <div className="scroll-stage">
           <div className="site-container scroll-stage-content">
             <motion.div
@@ -82,6 +83,7 @@ export function ScrollExperience() {
       </div>
       <HowItWorksSection trackRef={howRef} profile={profile} />
       <ContextExperience />
+      <FinalScreen />
     </div>
   )
 }

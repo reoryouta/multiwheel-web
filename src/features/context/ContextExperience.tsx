@@ -31,8 +31,10 @@ export function ContextExperience() {
 
   return (
     <motion.section
+      id="context"
+      tabIndex={-1}
       aria-labelledby="context-title"
-      className="context-experience site-container"
+      className="context-experience site-container outline-none"
       viewport={{ amount: 0 }}
       onViewportLeave={() => setEntrance(hiddenEntrance)}
     >

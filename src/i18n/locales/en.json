@@ -5,6 +5,45 @@
   "scroll": {
     "continue": "Scroll to explore"
   },
+  "final": {
+    "download": {
+      "eyebrow": "Multiwheel for Windows",
+      "titleLineOne": "Work at",
+      "titleLineTwo": "your own pace.",
+      "description": "Everyone has their own way of working, their own habits, and their favorite tools. We want Multiwheel to become a natural part of your workspace, helping you focus on what you love doing without getting distracted by the little things.",
+      "button": "Download for Windows",
+      "status": "Currently in development"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "systems": {
+        "question": "Which operating systems will Multiwheel run on?",
+        "answer": "Multiwheel is being developed for Windows. Exact system requirements will be shared closer to release."
+      },
+      "customization": {
+        "question": "Can I customize the wheel?",
+        "answer": "Personalizing the wheel and its actions is one of the core ideas behind Multiwheel."
+      },
+      "applications": {
+        "question": "Which apps are supported?",
+        "answer": "The environments on this site illustrate the concept of contextual profiles. The final list of apps has not yet been confirmed."
+      },
+      "release": {
+        "question": "When will Multiwheel be available to download?",
+        "answer": "The app is currently in development."
+      }
+    },
+    "footer": {
+      "windows": "In development for Windows",
+      "product": "Product",
+      "about": "About Multiwheel",
+      "context": "Context awareness",
+      "download": "Download",
+      "project": "Project",
+      "copyright": "© 2026 Multiwheel",
+      "backToTop": "Back to top"
+    }
+  },
   "context": {
     "titleLineOne": "Different apps.",
     "titleLineTwo": "One gesture.",
