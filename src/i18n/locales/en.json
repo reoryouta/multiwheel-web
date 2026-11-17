@@ -5,6 +5,31 @@
   "scroll": {
     "continue": "Scroll to explore"
   },
+  "context": {
+    "titleLineOne": "Different apps.",
+    "titleLineTwo": "One gesture.",
+    "description": "Multiwheel adapts to your workspace.",
+    "workspaceLabel": "Conceptual {{app}} workspace with an interactive Multiwheel demo",
+    "switcherLabel": "Demo workspaces",
+    "concept": "Workspace concept",
+    "demoNotice": "Conceptual environments and actions. This demo does not confirm support for these apps.",
+    "ui": {
+      "layers": "Layers",
+      "navigation": "Navigation",
+      "heading": "Heading",
+      "content": "Content",
+      "cover": "Cover",
+      "design": "Design",
+      "layout": "Layout",
+      "fill": "Fill",
+      "accent": "Accent",
+      "explorer": "Explorer",
+      "opacity": "Opacity",
+      "color": "Color",
+      "landscape": "Landscape",
+      "background": "Background"
+    }
+  },
   "howItWorks": {
     "press": "Press.",
     "select": "Select.",

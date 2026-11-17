@@ -7,6 +7,7 @@ import { ScrollIndicator } from './ScrollIndicator'
 import { scrollSceneConfig } from './scrollSceneConfig'
 import { useScrollExperience } from './useScrollExperience'
 import { HowItWorksSection } from '../how-it-works/HowItWorksSection'
+import { ContextExperience } from '../context/ContextExperience'
 import { useWheelHandoff } from '../how-it-works/useWheelHandoff'
 import { wheelProfiles, type WheelProfile } from '../wheel/wheelProfiles'
 import './scroll-experience.css'
@@ -80,6 +81,7 @@ export function ScrollExperience() {
         </div>
       </div>
       <HowItWorksSection trackRef={howRef} profile={profile} />
+      <ContextExperience />
     </div>
   )
 }

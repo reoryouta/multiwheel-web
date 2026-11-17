@@ -1,0 +1,313 @@
+.context-experience {
+  padding-block: clamp(3rem, 6svh, 5rem);
+}
+
+.context-heading {
+  margin-inline: auto;
+  max-width: 52rem;
+  text-align: center;
+}
+
+.context-window {
+  max-width: 66rem;
+  margin: clamp(2rem, 4vw, 2.5rem) auto 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--control-radius) * 2);
+  background: var(--background);
+}
+
+.context-window-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: 2.75rem;
+  padding-inline: 1rem;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 65%, var(--background));
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.context-window-name {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 7rem;
+  color: var(--text-primary);
+}
+
+.context-window-caption {
+  text-align: center;
+}
+
+.context-window-controls {
+  opacity: 0.45;
+  flex-shrink: 0;
+}
+
+.context-workspace {
+  position: relative;
+  isolation: isolate;
+  height: clamp(22rem, 34vw, 25rem);
+}
+
+.context-wheel {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  width: clamp(16.5rem, 32vw, 24rem);
+  max-width: calc(100% - 1rem);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  isolation: isolate;
+}
+
+.context-controls {
+  margin-top: 1.5rem;
+}
+
+.context-disclaimer {
+  max-width: 34rem;
+  margin: 1rem auto 0;
+  text-align: center;
+  text-wrap: pretty;
+}
+
+.workspace-environment {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.workspace-sidebar {
+  width: clamp(8rem, 17%, 11rem);
+  flex: none;
+  border-right: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 40%, var(--background));
+}
+
+.workspace-sidebar--right {
+  width: clamp(9.5rem, 17%, 11rem);
+  border-right: 0;
+  border-left: 1px solid var(--border);
+}
+
+.workspace-panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.workspace-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2rem;
+  padding-inline: 0.875rem;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--text-secondary) 70%, transparent);
+}
+
+.workspace-row svg {
+  flex: none;
+}
+
+.workspace-row--nested {
+  padding-left: 1.5rem;
+}
+
+.workspace-row--selected {
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  color: var(--text-secondary);
+}
+
+.workspace-canvas {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.figma-artboard {
+  position: absolute;
+  inset: 16% 13%;
+  padding: 6%;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  background: color-mix(in srgb, var(--surface) 65%, var(--background));
+}
+
+.figma-frame-label {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 0.375rem);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.figma-artboard-nav {
+  display: flex;
+  align-items: center;
+  gap: 6%;
+  height: 8%;
+}
+
+.figma-artboard-nav span {
+  width: 7%;
+  aspect-ratio: 1;
+  margin-right: auto;
+  border-radius: 25%;
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.figma-artboard-nav i,
+.figma-artboard-title i,
+.workspace-property-lines i {
+  display: block;
+  width: 22%;
+  height: 0.25rem;
+  border-radius: 0.125rem;
+  background: color-mix(in srgb, var(--text-secondary) 20%, transparent);
+}
+
+.figma-artboard-title {
+  display: grid;
+  gap: 0.5rem;
+  margin-block: 13% 10%;
+}
+
+.figma-artboard-title i { width: 66%; height: 0.625rem; }
+.figma-artboard-title i:last-child { width: 44%; }
+
+.figma-artboard-content {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 6%;
+  height: 45%;
+}
+
+.figma-artboard-content div {
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+}
+
+.figma-handle {
+  position: absolute;
+  width: 0.3125rem;
+  height: 0.3125rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  background: var(--background);
+}
+
+.figma-handle--tl { top: -0.1875rem; left: -0.1875rem; }
+.figma-handle--tr { top: -0.1875rem; right: -0.1875rem; }
+.figma-handle--bl { bottom: -0.1875rem; left: -0.1875rem; }
+.figma-handle--br { bottom: -0.1875rem; right: -0.1875rem; }
+
+.workspace-property-group {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.workspace-property-group p { margin: 0 0 0.75rem; }
+.workspace-property-group b { font-weight: 400; }
+.workspace-property-pair { display: flex; gap: 1.5rem; margin-block: 0.375rem; font-variant-numeric: tabular-nums; }
+.workspace-property-pair b { margin-left: 0.5rem; }
+.workspace-property-lines { display: grid; gap: 0.625rem; }
+.workspace-property-lines i { width: 80%; }
+.workspace-property-lines i:last-child { width: 55%; }
+.workspace-swatch { display: flex; align-items: center; gap: 0.5rem; }
+.workspace-swatch span { width: 0.875rem; height: 0.875rem; border-radius: 0.1875rem; background: var(--accent); opacity: 0.5; }
+
+.workspace-activity,
+.workspace-tools {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  flex: none;
+  width: 2.75rem;
+  padding-block: 1rem;
+  border-right: 1px solid var(--border);
+}
+
+.workspace-editor {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 1.75rem;
+}
+
+.workspace-editor-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  min-height: 2.5rem;
+  padding-inline: 1rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--accent);
+  background: color-mix(in srgb, var(--surface) 45%, var(--background));
+}
+
+.workspace-editor-tab span { margin-left: 1.5rem; }
+.workspace-code-lines { padding-block: 1rem; overflow: hidden; opacity: 0.65; }
+.workspace-code-line { display: flex; gap: 1.5rem; min-height: 1.5rem; white-space: pre; }
+.workspace-code-line code { font-family: ui-monospace, monospace; }
+.code-line-number { width: 2.75rem; flex: none; text-align: right; opacity: 0.45; font-variant-numeric: tabular-nums; }
+.code-keyword { color: var(--accent); }
+
+.workspace-editor-status {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.375rem 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem;
+}
+
+.workspace-tools { gap: 0.625rem; }
+.workspace-tools > span { display: grid; place-items: center; width: 1.875rem; height: 1.875rem; border-radius: 0.25rem; }
+.workspace-tool-selected { color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.photoshop-canvas { display: grid; place-items: center; }
+.photoshop-artboard { width: min(62%, 20rem); height: 80%; border: 1px solid var(--border); }
+.photoshop-artboard svg { display: block; width: 100%; height: 100%; }
+.workspace-image-layer { display: flex; align-items: center; gap: 0.5rem; min-height: 3rem; padding-inline: 0.75rem; }
+.workspace-image-layer > svg { flex: none; opacity: 0.5; }
+.workspace-layer-thumb { width: 1.5rem; height: 1.75rem; flex: none; border: 1px solid var(--border); background: var(--surface); }
+.workspace-layer-thumb--color { background: color-mix(in srgb, var(--accent) 20%, var(--surface)); }
+.workspace-layer-thumb--landscape { background: color-mix(in srgb, var(--text-secondary) 15%, var(--surface)); }
+
+@media (max-width: 767px) {
+  .workspace-sidebar { width: 7rem; }
+  .workspace-sidebar--right { display: none; }
+  .workspace-code .workspace-sidebar { display: none; }
+}
+
+@media (max-width: 479px) {
+  .context-window-bar { gap: 0.5rem; padding-inline: 0.75rem; }
+  .context-window-name { min-width: 0; }
+  .context-window-controls { display: none; }
+  .context-workspace { height: 22rem; }
+  .context-switcher svg { display: none; }
+  .workspace-figma .workspace-sidebar { width: 2.5rem; }
+  .workspace-figma .workspace-sidebar span { display: none; }
+  .workspace-figma .workspace-panel-heading { justify-content: center; padding-inline: 0; }
+  .workspace-figma .workspace-row { justify-content: center; padding-inline: 0; }
+  .figma-artboard { inset: 16% 9%; }
+  .workspace-code-line { gap: 0.75rem; }
+  .code-line-number { width: 1.5rem; }
+  .photoshop-artboard { width: 84%; }
+}
