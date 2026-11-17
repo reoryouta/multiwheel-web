@@ -1,37 +1,75 @@
 import { useId, useState } from 'react'
+import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { LocalizedRegion, LocalizedText } from '../../components/LocalizedText'
 import { SegmentedControl } from '../../components/SegmentedControl'
+import { useMotionPreference } from '../../lib/microMotion'
 import { ProfileWheel } from '../wheel/ProfileWheel'
 import { contextApps, type ContextAppId } from './contextApps'
 import { WorkspaceEnvironment } from './WorkspaceEnvironment'
+import { ContextCrossfade } from './ContextCrossfade'
+import { contextMotion } from './contextMotion'
 import './context-experience.css'
+
+const hiddenEntrance = { heading: false, frame: false, wheel: false, wheelReady: false }
 
 export function ContextExperience() {
   const { t } = useTranslation()
   const windowId = useId()
   const hintId = useId()
+  const reduceMotion = useMotionPreference()
+  const [entrance, setEntrance] = useState(hiddenEntrance)
+  const wheelReady = entrance.wheelReady
   const [appId, setAppId] = useState<ContextAppId>(contextApps[0].id)
   const app = contextApps.find(({ id }) => id === appId) ?? contextApps[0]
   const AppIcon = app.icon
 
-  return (
-    <section aria-labelledby="context-title" className="context-experience site-container">
-      <LocalizedRegion>
-        {(translate, measuring) => (
-          <div className="context-heading">
-            <h2 id={measuring ? undefined : 'context-title'} className="text-[clamp(2.5rem,5.2vw,4rem)] leading-[1.08] font-semibold tracking-[-0.055em] text-balance">
-              <span className="block">{translate('context.titleLineOne')}</span>{' '}
-              <span className="block text-primary/65">{translate('context.titleLineTwo')}</span>
-            </h2>
-            <p className="mt-6 text-base leading-relaxed text-secondary sm:text-lg">
-              {translate('context.description')}
-            </p>
-          </div>
-        )}
-      </LocalizedRegion>
+  function reveal(part: 'heading' | 'frame' | 'wheel') {
+    // Выход отдельного элемента за край экрана не сбрасывает уже показанную сцену.
+    setEntrance((current) => current[part] ? current : { ...current, [part]: true })
+  }
 
-      <div id={windowId} role="group" aria-label={t('context.workspaceLabel', { app: t(app.nameKey) })} className="context-window" data-context-app={app.id}>
+  return (
+    <motion.section
+      aria-labelledby="context-title"
+      className="context-experience site-container"
+      viewport={{ amount: 0 }}
+      onViewportLeave={() => setEntrance(hiddenEntrance)}
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: entrance.heading ? 1 : 0 }}
+        onViewportEnter={() => reveal('heading')}
+        viewport={contextMotion.viewport}
+        transition={{ duration: entrance.heading ? (reduceMotion ? contextMotion.reducedEntranceDuration : contextMotion.entranceDuration) : 0, ease: contextMotion.entranceEase }}
+      >
+        <LocalizedRegion>
+          {(translate, measuring) => (
+            <div className="context-heading">
+              <h2 id={measuring ? undefined : 'context-title'} className="text-[clamp(2.5rem,5.2vw,4rem)] leading-[1.08] font-semibold tracking-[-0.055em] text-balance">
+                <span className="block">{translate('context.titleLineOne')}</span>{' '}
+                <span className="block text-primary/65">{translate('context.titleLineTwo')}</span>
+              </h2>
+              <p className="mt-6 text-base leading-relaxed text-secondary sm:text-lg">
+                {translate('context.description')}
+              </p>
+            </div>
+          )}
+        </LocalizedRegion>
+      </motion.div>
+
+      <motion.div
+        id={windowId}
+        role="group"
+        aria-label={t('context.workspaceLabel', { app: t(app.nameKey) })}
+        className="context-window"
+        data-context-app={app.id}
+        initial={{ opacity: 0, y: reduceMotion ? 0 : contextMotion.offset }}
+        animate={{ opacity: entrance.frame ? 1 : 0, y: !entrance.frame && !reduceMotion ? contextMotion.offset : 0 }}
+        onViewportEnter={() => reveal('frame')}
+        viewport={contextMotion.viewport}
+        transition={{ duration: entrance.frame ? (reduceMotion ? contextMotion.reducedEntranceDuration : contextMotion.entranceDuration) : 0, delay: entrance.frame && !reduceMotion ? contextMotion.stagger : 0, ease: contextMotion.entranceEase }}
+      >
         <div className="context-window-bar">
           <div className="context-window-name"><AppIcon size={15} strokeWidth={1.5} aria-hidden="true" /><span>{t(app.nameKey)}</span></div>
           <span className="context-window-caption"><LocalizedText textKey="context.concept" /></span>
@@ -40,14 +78,44 @@ export function ContextExperience() {
           </svg>
         </div>
         <div className="context-workspace">
-          <WorkspaceEnvironment appId={app.id} />
+          {contextApps.map((profile) => (
+            <ContextCrossfade key={profile.id} active={profile.id === app.id}>
+              <WorkspaceEnvironment appId={profile.id} />
+            </ContextCrossfade>
+          ))}
           {/* Постоянный контейнер отвечает за положение; меняются только действия внутри. */}
           <div className="context-wheel">
             <div aria-hidden="true" className="wheel-preview-glow pointer-events-none absolute inset-0 -z-10" />
-            <ProfileWheel key={app.id} profile={app} hintId={hintId} />
+            <motion.div
+              initial="hidden"
+              animate={entrance.wheel ? 'visible' : 'hidden'}
+              variants={{
+                hidden: { opacity: 0, scale: reduceMotion ? 1 : contextMotion.wheelScale, transition: { duration: 0 } },
+                visible: {
+                  opacity: 1,
+                  scale: 1,
+                  transition: { duration: reduceMotion ? contextMotion.reducedEntranceDuration : contextMotion.entranceDuration, delay: reduceMotion ? 0 : contextMotion.stagger * 2, ease: contextMotion.entranceEase },
+                },
+              }}
+              onViewportEnter={() => reveal('wheel')}
+              viewport={contextMotion.viewport}
+              onAnimationComplete={(definition) => {
+                if (definition !== 'visible') return
+                setEntrance((current) => current.wheel && !current.wheelReady ? { ...current, wheelReady: true } : current)
+              }}
+              inert={!wheelReady}
+              className="absolute inset-0"
+            >
+              {/* Слои остаются смонтированы: opacity перенаправляется к последнему выбору. */}
+              {contextApps.map((profile) => (
+                <ContextCrossfade key={profile.id} active={profile.id === app.id}>
+                  <ProfileWheel profile={profile} hintId={hintId} interactive={wheelReady && profile.id === app.id} />
+                </ContextCrossfade>
+              ))}
+            </motion.div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       <div className="context-controls">
         <SegmentedControl
@@ -65,6 +133,6 @@ export function ContextExperience() {
         <p className="context-disclaimer text-xs leading-relaxed text-secondary"><LocalizedText textKey="context.demoNotice" /></p>
       </div>
       <p id={hintId} className="sr-only">{t('hero.wheel.keyboardHint')}</p>
-    </section>
+    </motion.section>
   )
 }
