@@ -1,0 +1,103 @@
+.header-space {
+  /* Исходные min-h-24 и нижняя граница остаются в потоке при любом состоянии. */
+  height: calc(6rem + 1px);
+}
+
+/* Отступ только для якорной навигации; геометрия секций остаётся прежней.
+   Зафиксированная How It Works должна по-прежнему выравниваться в top: 0. */
+:is(#about, #context, #download, #faq, #how-it-works:not(.how-scene-track--enhanced)) {
+  scroll-margin-top: calc(6rem + 1px + 1rem);
+}
+
+.site-header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 40;
+  max-height: 100svh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  opacity: 1;
+  transition: opacity var(--micro-hover-duration) var(--micro-ease);
+}
+
+.site-header[data-hidden='true'] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.header-interactive {
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--micro-hover-duration) var(--micro-ease),
+    border-color var(--micro-hover-duration) var(--micro-ease),
+    opacity var(--micro-hover-duration) var(--micro-ease);
+}
+
+.header-interactive:focus-visible {
+  color: var(--text-primary);
+}
+
+.header-brand:focus-visible {
+  border-radius: var(--control-radius);
+  outline-offset: -2px;
+}
+
+.header-brand-icon {
+  transition: border-color var(--micro-hover-duration) var(--micro-ease);
+}
+
+@media (hover: hover) {
+  .header-interactive:hover {
+    color: var(--text-primary);
+  }
+
+  .header-download:hover,
+  .header-menu-button:hover {
+    border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  }
+
+  .header-brand:hover .header-brand-icon {
+    border-color: var(--accent);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .site-header {
+    transform: translateY(0);
+    transition: transform 240ms var(--micro-ease);
+  }
+
+  .site-header[data-hidden='true'] {
+    opacity: 1;
+    transform: translateY(-100%);
+  }
+
+  .header-interactive {
+    transition:
+      color var(--micro-hover-duration) var(--micro-ease),
+      border-color var(--micro-hover-duration) var(--micro-ease),
+      opacity var(--micro-hover-duration) var(--micro-ease),
+      scale 150ms ease-out;
+  }
+
+  .header-interactive:not(:disabled):active {
+    scale: 0.96;
+  }
+
+  .site-header:focus-within {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-interactive:not(:disabled):active {
+    opacity: 0.85;
+  }
+}
+
+/* Фокус остаётся доступным даже у скрытой шапки, без ожидания анимации. */
+.site-header:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+  transition-duration: 0s;
+}

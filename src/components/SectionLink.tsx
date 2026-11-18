@@ -1,14 +1,20 @@
-import type { ReactNode } from 'react'
+import type { AnchorHTMLAttributes } from 'react'
 import { requestSectionNavigation, type SectionId } from '../features/scroll/sectionNavigation'
 
-export function SectionLink({ target, children, className }: { target: SectionId; children: ReactNode; className?: string }) {
+type SectionLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'target' | 'onClick'> & {
+  target: SectionId
+  onNavigate?: () => void
+}
+
+export function SectionLink({ target, children, onNavigate, ...props }: SectionLinkProps) {
   return (
     <a
       href={`#${target}`}
-      className={className}
+      {...props}
       onClick={(event) => {
         if (event.button || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return
         requestSectionNavigation(target)
+        onNavigate?.()
       }}
     >{children}</a>
   )
