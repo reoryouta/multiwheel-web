@@ -4,6 +4,7 @@ import { howItWorksConfig, WheelGestureGate } from './howItWorksConfig'
 import { sectionFromHash, sectionNavigationEvent, type SectionId } from '../scroll/sectionNavigation'
 
 type ScrollSide = 'before' | 'holding' | 'after'
+type NativeWheelScroll = { min: number; max: number; target: number; direction: number }
 
 export function useHowItWorksSequence(
   trackRef: RefObject<HTMLElement | null>,
@@ -43,16 +44,18 @@ export function useHowItWorksSequence(
     let top = track.getBoundingClientRect().top + window.scrollY
     let previousY = window.scrollY
     let side: ScrollSide = previousY > top ? 'after' : 'before'
-    let lastWheel = -Infinity
+    let keyboardScroll = false
+    let nativeWheelScroll: NativeWheelScroll | undefined
     let bypass = Boolean(sectionFromHash() && sectionFromHash() !== 'how-it-works')
 
     function align() {
-      // Уже поставленные браузером в очередь смещения не могут увести захваченную сцену.
+      // Коррекция разрешена только для входа, layout и незавершённого wheel-смещения.
       if (Math.abs(window.scrollY - top) > 0.5) window.scrollTo({ top, behavior: 'instant' })
       previousY = top
     }
 
     function enter(direction: number, fromWheel: boolean) {
+      if (fromWheel) keyboardScroll = false
       side = 'holding'
       if (fromWheel) gesture.consume(performance.now())
       else gesture.reset()
@@ -69,6 +72,7 @@ export function useHowItWorksSequence(
     }
 
     function release(direction: number) {
+      keyboardScroll = false
       side = direction > 0 ? 'after' : 'before'
       gesture.consume(performance.now())
       gesture.mode = 'released'
@@ -76,10 +80,50 @@ export function useHowItWorksSequence(
       flushSync(() => setPinned(false))
     }
 
+    function leaveForNavigation(position = window.scrollY) {
+      // Нативная навигация владеет позицией страницы. Не возвращаем её к якорю.
+      bypass = true
+      keyboardScroll = false
+      nativeWheelScroll = undefined
+      gesture.reset()
+      clearTimeout(timer.current)
+      animating.current = false
+      current.current = 0
+      side = position > top ? 'after' : 'before'
+      previousY = position
+      flushSync(() => {
+        setPinned(false)
+        setBusy(false)
+        setStep(0)
+      })
+    }
+
+    function rememberNativeWheel(position: number, delta: number) {
+      // Один wheel порождает несколько scroll-кадров. Сохраняем весь ожидаемый путь,
+      // включая накопленные смещения, которые браузер ещё не успел применить.
+      const direction = Math.sign(delta)
+      const previous = nativeWheelScroll?.direction === direction ? nativeWheelScroll : undefined
+      const target = (previous?.target ?? position) + delta
+      nativeWheelScroll = {
+        min: Math.min(previous?.min ?? position, position, target),
+        max: Math.max(previous?.max ?? position, position, target),
+        target,
+        direction,
+      }
+    }
+
+    function isNativeWheelScroll(position: number) {
+      return !bypass && nativeWheelScroll !== undefined
+        && position >= nativeWheelScroll.min - 0.5 && position <= nativeWheelScroll.max + 0.5
+    }
+
     function measure() {
       // Измеряется постоянный якорь, а не вынесенный в position:fixed контент.
       top = track!.getBoundingClientRect().top + window.scrollY
-      if (side === 'holding') align()
+      if (side === 'holding') {
+        if (Math.abs(window.scrollY - previousY) > 0.5 && !isNativeWheelScroll(window.scrollY)) leaveForNavigation()
+        else align()
+      }
     }
 
     function prepareNavigation(id: SectionId) {
@@ -91,11 +135,7 @@ export function useHowItWorksSequence(
         return
       }
       // Якорный переход не является жестом демонстрации: разрешаем пройти её границу.
-      bypass = true
-      if (side === 'holding') {
-        const beforeScene = target.compareDocumentPosition(track!) & Node.DOCUMENT_POSITION_FOLLOWING
-        release(beforeScene ? -1 : 1)
-      }
+      leaveForNavigation()
     }
 
     function onSectionNavigation(event: Event) {
@@ -106,25 +146,54 @@ export function useHowItWorksSequence(
       const id = sectionFromHash()
       if (!id) return
       prepareNavigation(id)
-      // В том числе история браузера: восстанавливаем цель, если scroll уже пересёк сцену.
-      if (id !== 'how-it-works') document.getElementById(id)?.scrollIntoView({ behavior: 'instant', block: 'start' })
+      // Позицию якорного перехода и истории восстанавливает сам браузер.
     }
 
     function onScroll() {
       const position = window.scrollY
+      const fromWheel = isNativeWheelScroll(position)
       if (side === 'holding') {
-        align()
+        if (Math.abs(position - top) > 0.5) {
+          if (fromWheel || keyboardScroll) align()
+          else leaveForNavigation(position)
+        }
         return
       }
       const crossedDown = side === 'before' && previousY <= top && position >= top
       const crossedUp = side === 'after' && previousY >= top && position <= top
-      const wheelTail = performance.now() - lastWheel <= howItWorksConfig.gestureQuietMs
-      if (!bypass && !(gesture.mode === 'released' && wheelTail) && (crossedDown || crossedUp)) {
-        enter(crossedDown ? 1 : -1, wheelTail)
+      // Scroll не сообщает источник: ползунок, якорь и wheel создают одинаковое событие.
+      // Захватываем пересечение всего пути, а не только кадр возле якоря.
+      if (!bypass && (keyboardScroll || fromWheel) && gesture.mode !== 'released' && (crossedDown || crossedUp)) {
+        enter(crossedDown ? 1 : -1, fromWheel)
         return
       }
       previousY = position
       side = position > top ? 'after' : 'before'
+    }
+
+    function clearScrollInput() {
+      keyboardScroll = false
+      nativeWheelScroll = undefined
+    }
+
+    function onScrollEnd() {
+      // align() тоже вызывает scrollend. Он завершает наше выравнивание, а не
+      // обязательно весь поток wheel: кадры браузера ещё могут находиться в очереди.
+      // Пока сцена удерживается, ввод передают только явная навигация или release().
+      if (side !== 'holding') clearScrollInput()
+    }
+
+    function onPointerDown(event: MouseEvent) {
+      clearScrollInput()
+      const root = document.documentElement
+      const scrollbar = event.clientX >= root.clientWidth || event.clientX < root.clientLeft || event.clientY >= root.clientHeight
+      if (scrollbar) leaveForNavigation()
+    }
+
+    function onPointerOut(event: MouseEvent) {
+      // Нативная полоса может не отправить pointerdown в DOM. Выход курсора
+      // из документа также передаёт владение прокруткой обратно браузеру.
+      if (!event.relatedTarget) clearScrollInput()
     }
 
     function onWheel(event: WheelEvent) {
@@ -132,16 +201,18 @@ export function useHowItWorksSequence(
       bypass = false
       const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1)
       const now = performance.now()
-      lastWheel = now
+      keyboardScroll = false
       // Наблюдаем поток ещё до входа, чтобы его инерционный хвост принадлежал входу.
       const direction = gesture.feed(delta, now)
       if (side !== 'holding') {
         const position = window.scrollY
-        const crossingDown = side === 'before' && position <= top && delta > 0 && position + delta >= top
-        const crossingUp = side === 'after' && position >= top && delta < 0 && position + delta <= top
+        const crossingDown = side === 'before' && previousY <= top && delta > 0 && position + delta >= top
+        const crossingUp = side === 'after' && previousY >= top && delta < 0 && position + delta <= top
         if (gesture.mode !== 'released' && (crossingDown || crossingUp) && event.cancelable) {
           event.preventDefault()
           enter(crossingDown ? 1 : -1, true)
+        } else {
+          rememberNativeWheel(position, delta)
         }
         return
       }
@@ -149,10 +220,11 @@ export function useHowItWorksSequence(
       const outward = (current.current === 0 && delta < 0) || (current.current === 3 && delta > 0)
       if (gesture.mode === 'pending' && !animating.current && outward) {
         release(Math.sign(delta))
+        rememberNativeWheel(window.scrollY, delta)
         return
       }
-      if (!event.cancelable) return
-      event.preventDefault()
+      if (event.cancelable) event.preventDefault()
+      else rememberNativeWheel(window.scrollY, delta)
       if (gesture.mode === 'consumed') return
       if (animating.current) {
         gesture.consume(now)
@@ -171,21 +243,21 @@ export function useHowItWorksSequence(
       const direction = ['ArrowDown', 'PageDown'].includes(event.key) || (event.key === ' ' && !event.shiftKey)
         ? 1 : ['ArrowUp', 'PageUp'].includes(event.key) || (event.key === ' ' && event.shiftKey) ? -1 : 0
       if (event.key === 'Home' || event.key === 'End') {
-        bypass = true
-        if (side === 'holding') release(event.key === 'End' ? 1 : -1)
+        leaveForNavigation()
         return
       }
       if (side !== 'holding') {
         if (direction) {
           bypass = false
+          keyboardScroll = true
+          nativeWheelScroll = undefined
           gesture.reset()
         }
         return
       }
       if (event.key === 'Escape') {
         event.preventDefault()
-        bypass = true
-        release(1)
+        leaveForNavigation()
         document.getElementById('how-it-works-end')?.focus({ preventScroll: true })
         window.scrollTo({ top: top + track!.offsetHeight, behavior: 'instant' })
         return
@@ -194,8 +266,7 @@ export function useHowItWorksSequence(
         const controls = scene!.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex="0"]')
         const leaving = event.shiftKey ? target === controls[0] : target === controls[controls.length - 1]
         if (leaving) {
-          bypass = true
-          release(event.shiftKey ? -1 : 1)
+          leaveForNavigation()
         }
         return
       }
@@ -215,14 +286,11 @@ export function useHowItWorksSequence(
       const target = event.target as HTMLElement
       if (side !== 'holding' || track!.contains(target)) return
       // Tab и внешние ссылки могут увести фокус со сцены, не удерживая страницу.
-      bypass = true
-      const beforeScene = target.compareDocumentPosition(scene!) & Node.DOCUMENT_POSITION_FOLLOWING
-      release(beforeScene ? -1 : 1)
+      leaveForNavigation()
     }
 
     skip.current = () => {
-      bypass = true
-      if (side === 'holding') release(1)
+      leaveForNavigation()
     }
     const observer = new ResizeObserver(measure)
     observer.observe(track)
@@ -233,6 +301,12 @@ export function useHowItWorksSequence(
     })
     window.addEventListener('resize', measure)
     window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('scrollend', onScrollEnd)
+    window.addEventListener('pointerdown', onPointerDown, true)
+    window.addEventListener('mousedown', onPointerDown, true)
+    window.addEventListener('pointerout', onPointerOut)
+    window.addEventListener('mouseout', onPointerOut)
+    window.addEventListener('blur', clearScrollInput)
     window.addEventListener('wheel', onWheel, { passive: false })
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('focusin', onFocusIn)
@@ -243,8 +317,17 @@ export function useHowItWorksSequence(
       observer.disconnect()
       skip.current = () => {}
       setPinned(false)
+      clearTimeout(timer.current)
+      animating.current = false
+      setBusy(false)
       window.removeEventListener('resize', measure)
       window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('scrollend', onScrollEnd)
+      window.removeEventListener('pointerdown', onPointerDown, true)
+      window.removeEventListener('mousedown', onPointerDown, true)
+      window.removeEventListener('pointerout', onPointerOut)
+      window.removeEventListener('mouseout', onPointerOut)
+      window.removeEventListener('blur', clearScrollInput)
       window.removeEventListener('wheel', onWheel)
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('focusin', onFocusIn)
