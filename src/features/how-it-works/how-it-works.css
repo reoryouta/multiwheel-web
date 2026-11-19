@@ -41,9 +41,7 @@
 
 .how-step-button {
   max-width: 100%;
-  font-size: var(--step-size);
-  line-height: 1.1;
-  letter-spacing: -0.055em;
+  --scene-title-size: var(--step-size);
 }
 
 .how-rail {

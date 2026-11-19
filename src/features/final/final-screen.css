@@ -32,11 +32,7 @@
 
 .final-download-title {
   margin: 0;
-  font-size: clamp(2rem, 5.2vw, 3.75rem);
-  line-height: 1.1;
-  font-weight: 600;
-  letter-spacing: -0.045em;
-  text-wrap: balance;
+  --scene-title-size: clamp(2rem, 5.2vw, 3.75rem);
 }
 
 .final-title-accent {
@@ -88,7 +84,7 @@
   scroll-margin-top: 1.5rem;
 }
 
-.final-faq-title { margin: 0; font-size: clamp(1.75rem, 3vw, 2.25rem); line-height: 1.2; font-weight: 600; letter-spacing: -0.035em; text-wrap: balance; }
+.final-faq-title { margin: 0; font-family: var(--font-heading); font-size: clamp(1.75rem, 3vw, 2.25rem); line-height: 1.2; font-weight: 600; letter-spacing: var(--heading-tracking); text-wrap: balance; }
 .final-faq-list { min-width: 0; border-top: 1px solid var(--border); }
 .final-faq-item { border-bottom: 1px solid var(--border); }
 .final-faq-item h3 { margin: 0; }

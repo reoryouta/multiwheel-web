@@ -49,7 +49,7 @@ export function HowItWorksSection({ trackRef, profile }: { trackRef: RefObject<H
                         whileTap={reduceMotion ? undefined : { scale: 0.98 }}
                         transition={controlTransitions(reduceMotion)}
                         style={microControlStyle}
-                        className="micro-control how-step-button cursor-pointer text-left font-semibold"
+                        className="micro-control scene-title how-step-button cursor-pointer text-left"
                       ><LocalizedText textKey={textKey} /></motion.button>
                     </li>
                   ))}

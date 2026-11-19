@@ -48,7 +48,7 @@ export function ContextExperience() {
         <LocalizedRegion>
           {(translate, measuring) => (
             <div className="context-heading">
-              <h2 id={measuring ? undefined : 'context-title'} className="text-[clamp(2.5rem,5.2vw,4rem)] leading-[1.08] font-semibold tracking-[-0.055em] text-balance">
+              <h2 id={measuring ? undefined : 'context-title'} className="scene-title">
                 <span className="block">{translate('context.titleLineOne')}</span>{' '}
                 <span className="block text-primary/65">{translate('context.titleLineTwo')}</span>
               </h2>

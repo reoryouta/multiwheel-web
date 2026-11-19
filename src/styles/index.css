@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./fonts.css";
 @import "./microinteractions.css";
 
 /* Основные настройки фирменного стиля меняются здесь. */
@@ -12,6 +13,9 @@
   --border: color-mix(in srgb, var(--text-primary) 12%, transparent);
   --control-radius: 0.625rem;
   --site-width: 76rem;
+  --font-heading: "Onest", system-ui, sans-serif;
+  --heading-weight: 800;
+  --heading-tracking: -0.02em;
 }
 
 /* Связываем CSS-переменные с понятными классами Tailwind. */
@@ -51,6 +55,40 @@
   max-width: var(--site-width);
   margin-inline: auto;
   padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+/* Only scene headlines use Onest; body and interface text keep system-ui.
+   Match the unlayered scene styles without changing the global cascade. */
+.scene-title {
+  font-family: var(--font-heading);
+  font-size: var(--scene-title-size, clamp(2.5rem, 5.2vw, 4rem));
+  font-weight: var(--heading-weight);
+  line-height: 1.1;
+  letter-spacing: var(--heading-tracking);
+  text-wrap: balance;
+}
+
+.hero-title {
+  --scene-title-size: clamp(2.5rem, 4.1vw, 3.375rem);
+  line-height: 1.12;
+}
+
+.philosophy-title {
+  --scene-title-size: clamp(2.5rem, 4.2vw, 3.375rem);
+  line-height: 1.12;
+}
+
+@media (min-width: 1024px) {
+  .hero-title > span {
+    white-space: nowrap;
+  }
+}
+
+/* Narrow layouts let display copy wrap to three or more lines. */
+@media (max-width: 639px) {
+  .scene-title:not(.how-step-button) {
+    line-height: 1.4;
+  }
 }
 
 /* Статичное мягкое свечение не выходит за границы области колеса. */

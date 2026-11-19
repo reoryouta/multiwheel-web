@@ -9,7 +9,7 @@ export function PhilosophySection() {
             <p className="mb-7 text-xs font-medium tracking-[0.18em] text-accent">
               {t('philosophy.eyebrow')}
             </p>
-            <h2 id={measuring ? undefined : 'philosophy-title'} className="text-[clamp(2.5rem,5.2vw,4rem)] leading-[1.08] font-semibold tracking-[-0.055em] text-balance">
+            <h2 id={measuring ? undefined : 'philosophy-title'} className="scene-title philosophy-title">
               <span className="block">{t('philosophy.titleLineOne')}</span>{' '}
               <span className="block text-primary/65">{t('philosophy.titleLineTwo')}</span>
             </h2>

@@ -40,7 +40,7 @@ export function HeroSection() {
             <motion.h1
               id={measuring ? undefined : 'hero-title'}
               variants={measuring ? undefined : reveal}
-              className="text-[clamp(2.5rem,5.2vw,4rem)] leading-[1.08] font-semibold tracking-[-0.055em] text-balance"
+              className="scene-title hero-title"
             >
               <span className="block">{t('hero.titleLineOne')}</span>{' '}
               <span className="block text-primary/65">{t('hero.titleLineTwo')}</span>

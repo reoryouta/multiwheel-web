@@ -23,7 +23,7 @@ export function DownloadSection() {
           {(t, measuring) => (
             <div>
               <p className="final-eyebrow">{t('final.download.eyebrow')}</p>
-              <h2 id={measuring ? undefined : 'final-download-title'} className="final-download-title">
+              <h2 id={measuring ? undefined : 'final-download-title'} className="scene-title final-download-title">
                 <span className="block">{t('final.download.titleLineOne')}</span>{' '}
                 <span className="block final-title-accent">{t('final.download.titleLineTwo')}</span>
               </h2>
