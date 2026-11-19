@@ -1,12 +1,13 @@
 .header-space {
-  /* Исходные min-h-24 и нижняя граница остаются в потоке при любом состоянии. */
+  --header-height: 4.5rem;
+  /* Резерв сцены независим от видимой шапки: сохраняем координаты прокрутки. */
   height: calc(6rem + 1px);
 }
 
 /* Отступ только для якорной навигации; геометрия секций остаётся прежней.
    Зафиксированная How It Works должна по-прежнему выравниваться в top: 0. */
 :is(#about, #context, #download, #faq, #how-it-works:not(.how-scene-track--enhanced)) {
-  scroll-margin-top: calc(6rem + 1px + 1rem);
+  scroll-margin-top: calc(4.5rem + 1rem);
 }
 
 .site-header {
@@ -29,6 +30,7 @@
   -webkit-tap-highlight-color: transparent;
   transition:
     color var(--micro-hover-duration) var(--micro-ease),
+    background-color var(--micro-hover-duration) var(--micro-ease),
     border-color var(--micro-hover-duration) var(--micro-ease),
     opacity var(--micro-hover-duration) var(--micro-ease);
 }
@@ -42,6 +44,16 @@
   outline-offset: -2px;
 }
 
+.header-brand {
+  min-height: calc(var(--header-height) - 1px);
+}
+
+.header-download {
+  background: color-mix(in srgb, var(--accent) 85%, var(--background));
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
 .header-brand-icon {
   transition: border-color var(--micro-hover-duration) var(--micro-ease);
 }
@@ -51,9 +63,13 @@
     color: var(--text-primary);
   }
 
-  .header-download:hover,
   .header-menu-button:hover {
     border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  }
+
+  .header-download:hover {
+    background: color-mix(in srgb, var(--accent) 90%, var(--background));
+    border-color: color-mix(in srgb, var(--accent) 80%, var(--text-primary));
   }
 
   .header-brand:hover .header-brand-icon {
@@ -75,6 +91,7 @@
   .header-interactive {
     transition:
       color var(--micro-hover-duration) var(--micro-ease),
+      background-color var(--micro-hover-duration) var(--micro-ease),
       border-color var(--micro-hover-duration) var(--micro-ease),
       opacity var(--micro-hover-duration) var(--micro-ease),
       scale 150ms ease-out;

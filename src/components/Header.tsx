@@ -46,8 +46,8 @@ export function Header() {
           menuButtonRef.current?.focus({ preventScroll: true })
         }}
       >
-        <div className="site-container grid grid-cols-[1fr_auto] items-center gap-x-8 lg:grid-cols-[auto_1fr_auto]">
-          <SectionLink target="top" onNavigate={closeMenu} className="header-brand header-interactive flex min-h-24 items-center gap-3">
+        <div className="site-container grid grid-cols-[1fr_auto] items-center gap-x-8 lg:grid-cols-[auto_1fr]">
+          <SectionLink target="top" onNavigate={closeMenu} className="header-brand header-interactive flex items-center gap-3">
             <span className="header-brand-icon flex size-9 items-center justify-center rounded-control border border-accent/25 bg-accent/10 text-accent">
               <Aperture size={22} strokeWidth={1.7} aria-hidden="true" />
             </span>
@@ -70,11 +70,11 @@ export function Header() {
 
           <div
             id="header-content"
-            className={`${isMenuOpen ? 'flex' : 'hidden'} col-span-2 flex-col gap-6 border-t border-border py-6 lg:col-start-2 lg:row-start-1 lg:flex lg:flex-row lg:items-center lg:justify-between lg:border-0 lg:py-0`}
+            className={`${isMenuOpen ? 'flex' : 'hidden'} col-span-2 flex-col gap-6 border-t border-border py-6 lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:flex lg:flex-row lg:items-center lg:justify-end lg:gap-8 lg:border-0 lg:py-0`}
           >
             <nav
               aria-label={t('header.navigation.label')}
-              className="flex flex-col gap-3 lg:mx-auto lg:flex-row lg:items-center lg:gap-4"
+              className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4"
             >
               <ul className="flex flex-col gap-4 text-sm text-secondary lg:flex-row lg:items-center lg:gap-6">
                 {navigationItems.map((item) => (
@@ -87,22 +87,16 @@ export function Header() {
               </ul>
             </nav>
 
-            <div className="flex flex-wrap items-start gap-x-6 gap-y-5">
+            <div className="flex flex-wrap items-center gap-4">
               <LanguageSwitcher />
-              <div className="flex flex-col gap-1.5">
-                <SectionLink
-                  target="download"
-                  onNavigate={closeMenu}
-                  aria-describedby="download-status"
-                  className="header-download header-interactive flex min-h-10 items-center justify-center gap-2 rounded-control border border-border bg-surface px-4 text-sm font-medium text-secondary"
-                >
-                  <Download size={16} aria-hidden="true" />
-                  <LocalizedText textKey="header.download" />
-                </SectionLink>
-                <p id="download-status" className="text-xs text-secondary">
-                  <LocalizedText textKey="header.downloadUnavailable" />
-                </p>
-              </div>
+              <SectionLink
+                target="download"
+                onNavigate={closeMenu}
+                className="header-download header-interactive flex min-h-10 items-center justify-center gap-2 rounded-control border ps-3.5 pe-4 text-sm font-medium"
+              >
+                <Download size={16} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
+                <LocalizedText textKey="header.download" />
+              </SectionLink>
             </div>
           </div>
         </div>
