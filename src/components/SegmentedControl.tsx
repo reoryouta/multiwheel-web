@@ -11,14 +11,29 @@ type SegmentedControlProps = {
   controlsId?: string
   className: string
   buttonClassName: string
+  // Для однострочного grid с p-1 / gap-1: подложка движется только по локальной оси X.
+  highlightMode?: 'shared' | 'horizontal'
 }
 
-export function SegmentedControl({ items, selectedId, onSelect, label, controlsId, className, buttonClassName }: SegmentedControlProps) {
+export function SegmentedControl({ items, selectedId, onSelect, label, controlsId, className, buttonClassName, highlightMode = 'shared' }: SegmentedControlProps) {
   const selectionId = useId()
   const reduceMotion = useMotionPreference()
+  const horizontal = highlightMode === 'horizontal'
+  const selectedIndex = Math.max(0, items.findIndex(({ id }) => id === selectedId))
 
   return (
-    <div role="group" aria-label={label} className={className} data-selection-group={selectionId}>
+    <div role="group" aria-label={label} className={`${className}${horizontal ? ' relative isolate' : ''}`} data-selection-group={selectionId}>
+      {horizontal && items.length > 0 && (
+        <motion.span
+          aria-hidden="true"
+          data-selection-highlight=""
+          initial={false}
+          animate={{ x: `calc(${selectedIndex * 100}% + ${selectedIndex * 0.25}rem)` }}
+          transition={{ duration: reduceMotion ? 0 : microMotion.selection, ease: microMotion.ease }}
+          style={{ width: `calc((100% - 0.5rem - ${(items.length - 1) * 0.25}rem) / ${items.length})` }}
+          className="pointer-events-none absolute inset-y-1 left-1 -z-10 rounded-md bg-accent/20"
+        />
+      )}
       {items.map(({ id, label: itemLabel, accessibleLabel, lang, icon: Icon }) => (
         <motion.button
           key={id}
@@ -37,7 +52,7 @@ export function SegmentedControl({ items, selectedId, onSelect, label, controlsI
           style={microControlStyle}
           className={`micro-control relative isolate flex cursor-pointer items-center justify-center rounded-md text-xs font-medium ${buttonClassName}`}
         >
-          {selectedId === id && (
+          {!horizontal && selectedId === id && (
             <motion.span
               aria-hidden="true"
               data-selection-highlight=""

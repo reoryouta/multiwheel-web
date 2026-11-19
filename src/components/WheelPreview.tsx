@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { ProfileSwitcher } from '../features/wheel/ProfileSwitcher'
 import { ProfileWheel } from '../features/wheel/ProfileWheel'
 import { wheelProfiles } from '../features/wheel/wheelProfiles'
-import { LocalizedText } from './LocalizedText'
 import type { WheelProfile } from '../features/wheel/wheelProfiles'
 
 type WheelPreviewProps = {
@@ -34,7 +33,7 @@ export function WheelPreview({ interactive = true, controlsVisible = true, contr
 
   return (
     <figure className="mx-auto w-full max-w-[32rem]">
-      <motion.div ref={visualRef} id={wheelId} initial={false} style={visualStyle} className="relative isolate aspect-square">
+      <motion.div ref={visualRef} id={wheelId} initial={false} style={visualStyle} className="wheel-preview-visual relative isolate aspect-square">
         <div aria-hidden="true" className="wheel-preview-glow pointer-events-none absolute inset-0 -z-10" />
         <AnimatePresence initial={false} mode="wait">
           {/* Новый key создаёт чистое состояние выбора и фокуса для каждого профиля. */}
@@ -46,7 +45,7 @@ export function WheelPreview({ interactive = true, controlsVisible = true, contr
         style={controlsStyle}
         aria-hidden={!controlsVisible}
         inert={!controlsVisible || !interactive}
-        className="mt-1 text-center text-xs text-secondary"
+        className="mt-3 text-center text-xs text-secondary"
       >
         <ProfileSwitcher
           profiles={wheelProfiles.map((item) => ({ id: item.id, name: t(item.nameKey), icon: item.icon }))}
@@ -55,10 +54,6 @@ export function WheelPreview({ interactive = true, controlsVisible = true, contr
           label={t('hero.wheel.profiles.label')}
           controlsId={wheelId}
         />
-        <p aria-live="polite" className="mt-2 flex min-h-8 items-center justify-center text-balance">
-          <LocalizedText textKey={profile.descriptionKey} />
-        </p>
-        <p className="mt-1"><LocalizedText textKey="hero.wheel.hint" /></p>
       </motion.figcaption>
       <p id={hintId} className="sr-only">{t('hero.wheel.keyboardHint')}</p>
     </figure>

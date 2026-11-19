@@ -69,13 +69,6 @@
   margin-top: 1.5rem;
 }
 
-.context-disclaimer {
-  max-width: 34rem;
-  margin: 1rem auto 0;
-  text-align: center;
-  text-wrap: pretty;
-}
-
 .workspace-environment {
   position: absolute;
   inset: 0;

@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useId, useLayoutEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { LocalizedRegion, LocalizedText } from '../../components/LocalizedText'
@@ -9,20 +9,35 @@ import { contextApps, type ContextAppId } from './contextApps'
 import { WorkspaceEnvironment } from './WorkspaceEnvironment'
 import { ContextCrossfade } from './ContextCrossfade'
 import { contextMotion } from './contextMotion'
+import { useDirectNavigation } from '../scroll/useDirectNavigation'
 import './context-experience.css'
 
 const hiddenEntrance = { heading: false, frame: false, wheel: false, wheelReady: false }
+const visibleEntrance = { heading: true, frame: true, wheel: true, wheelReady: true }
 
 export function ContextExperience() {
   const { t } = useTranslation()
   const windowId = useId()
   const hintId = useId()
   const reduceMotion = useMotionPreference()
-  const [entrance, setEntrance] = useState(hiddenEntrance)
+  const sectionRef = useRef<HTMLElement>(null)
+  const { active: direct } = useDirectNavigation()
+  const wasDirect = useRef(direct)
+  const [revealed, setEntrance] = useState(hiddenEntrance)
+  const entrance = direct ? visibleEntrance : revealed
   const wheelReady = entrance.wheelReady
   const [appId, setAppId] = useState<ContextAppId>(contextApps[0].id)
   const app = contextApps.find(({ id }) => id === appId) ?? contextApps[0]
   const AppIcon = app.icon
+
+  useLayoutEffect(() => {
+    if (wasDirect.current && !direct) {
+      const rect = sectionRef.current?.getBoundingClientRect()
+      // A direct pass is already visible. Do not queue a second entrance on release.
+      setEntrance(rect && rect.bottom > 0 && rect.top < window.innerHeight ? visibleEntrance : hiddenEntrance)
+    }
+    wasDirect.current = direct
+  }, [direct])
 
   function reveal(part: 'heading' | 'frame' | 'wheel') {
     // Выход отдельного элемента за край экрана не сбрасывает уже показанную сцену.
@@ -31,6 +46,7 @@ export function ContextExperience() {
 
   return (
     <motion.section
+      ref={sectionRef}
       id="context"
       tabIndex={-1}
       aria-labelledby="context-title"
@@ -40,7 +56,8 @@ export function ContextExperience() {
     >
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: entrance.heading ? 1 : 0 }}
+        animate={direct ? 'direct' : entrance.heading ? 'visible' : 'hidden'}
+        variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 }, direct: { opacity: 1, transition: { type: false } } }}
         onViewportEnter={() => reveal('heading')}
         viewport={contextMotion.viewport}
         transition={{ duration: entrance.heading ? (reduceMotion ? contextMotion.reducedEntranceDuration : contextMotion.entranceDuration) : 0, ease: contextMotion.entranceEase }}
@@ -52,9 +69,6 @@ export function ContextExperience() {
                 <span className="block">{translate('context.titleLineOne')}</span>{' '}
                 <span className="block text-primary/65">{translate('context.titleLineTwo')}</span>
               </h2>
-              <p className="mt-6 text-base leading-relaxed text-secondary sm:text-lg">
-                {translate('context.description')}
-              </p>
             </div>
           )}
         </LocalizedRegion>
@@ -67,7 +81,12 @@ export function ContextExperience() {
         className="context-window"
         data-context-app={app.id}
         initial={{ opacity: 0, y: reduceMotion ? 0 : contextMotion.offset }}
-        animate={{ opacity: entrance.frame ? 1 : 0, y: !entrance.frame && !reduceMotion ? contextMotion.offset : 0 }}
+        animate={direct ? 'direct' : entrance.frame ? 'visible' : 'hidden'}
+        variants={{
+          hidden: { opacity: 0, y: reduceMotion ? 0 : contextMotion.offset },
+          visible: { opacity: 1, y: 0 },
+          direct: { opacity: 1, y: 0, transition: { type: false } },
+        }}
         onViewportEnter={() => reveal('frame')}
         viewport={contextMotion.viewport}
         transition={{ duration: entrance.frame ? (reduceMotion ? contextMotion.reducedEntranceDuration : contextMotion.entranceDuration) : 0, delay: entrance.frame && !reduceMotion ? contextMotion.stagger : 0, ease: contextMotion.entranceEase }}
@@ -90,8 +109,9 @@ export function ContextExperience() {
             <div aria-hidden="true" className="wheel-preview-glow pointer-events-none absolute inset-0 -z-10" />
             <motion.div
               initial="hidden"
-              animate={entrance.wheel ? 'visible' : 'hidden'}
+              animate={direct ? 'direct' : entrance.wheel ? 'visible' : 'hidden'}
               variants={{
+                direct: { opacity: 1, scale: 1, transition: { type: false } },
                 hidden: { opacity: 0, scale: reduceMotion ? 1 : contextMotion.wheelScale, transition: { duration: 0 } },
                 visible: {
                   opacity: 1,
@@ -129,10 +149,10 @@ export function ContextExperience() {
           }}
           label={t('context.switcherLabel')}
           controlsId={windowId}
+          highlightMode="horizontal"
           className="context-switcher mx-auto grid w-fit max-w-full grid-cols-3 gap-1 rounded-control border border-border bg-surface/60 p-1"
           buttonClassName="min-h-11 gap-1.5 px-2 whitespace-nowrap sm:px-4"
         />
-        <p className="context-disclaimer text-xs leading-relaxed text-secondary"><LocalizedText textKey="context.demoNotice" /></p>
       </div>
       <p id={hintId} className="sr-only">{t('hero.wheel.keyboardHint')}</p>
     </motion.section>

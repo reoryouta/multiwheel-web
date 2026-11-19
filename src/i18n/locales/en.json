@@ -15,7 +15,7 @@
       "status": "Currently in development"
     },
     "faq": {
-      "title": "Frequently asked questions",
+      "title": "Still have questions?",
       "systems": {
         "question": "Which operating systems will Multiwheel run on?",
         "answer": "Multiwheel is being developed for Windows. Exact system requirements will be shared closer to release."
@@ -47,11 +47,9 @@
   "context": {
     "titleLineOne": "Different apps.",
     "titleLineTwo": "One gesture.",
-    "description": "Multiwheel adapts to your workspace.",
     "workspaceLabel": "Conceptual {{app}} workspace with an interactive Multiwheel demo",
     "switcherLabel": "Demo workspaces",
     "concept": "Workspace concept",
-    "demoNotice": "Conceptual environments and actions. This demo does not confirm support for these apps.",
     "ui": {
       "layers": "Layers",
       "navigation": "Navigation",
@@ -70,9 +68,9 @@
     }
   },
   "howItWorks": {
-    "press": "Press.",
-    "select": "Select.",
-    "continue": "Continue.",
+    "press": "Press",
+    "select": "Select",
+    "done": "Done",
     "simpleHint": "Tap a step to preview the sequence.",
     "keyboardHint": "Use Up, Down, Page Up, Page Down or Space for the previous and next step. Tab selects a step button. Escape leaves the scene.",
     "skip": "Skip the demonstration"

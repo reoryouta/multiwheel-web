@@ -11,7 +11,7 @@ import { howItWorksConfig } from './howItWorksConfig'
 import { useHowItWorksSequence } from './useHowItWorksSequence'
 import './how-it-works.css'
 
-const steps = ['howItWorks.press', 'howItWorks.select', 'howItWorks.continue'] as const
+const steps = ['howItWorks.press', 'howItWorks.select', 'howItWorks.done'] as const
 
 export function HowItWorksSection({ trackRef, profile }: { trackRef: RefObject<HTMLDivElement | null>; profile: WheelProfile }) {
   const { t } = useTranslation()

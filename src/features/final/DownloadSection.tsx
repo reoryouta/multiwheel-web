@@ -3,18 +3,32 @@ import { motion } from 'motion/react'
 import { LocalizedRegion, LocalizedText } from '../../components/LocalizedText'
 import { useMotionPreference } from '../../lib/microMotion'
 import { DecorativeWheel } from './DecorativeWheel'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { useDirectNavigation } from '../scroll/useDirectNavigation'
 
 export function DownloadSection() {
   const reduceMotion = useMotionPreference()
+  const { active: direct } = useDirectNavigation()
+  const sectionRef = useRef<HTMLElement>(null)
+  const [navigatedIntoView, setNavigatedIntoView] = useState(false)
+  useLayoutEffect(() => {
+    if (direct) return
+    const rect = sectionRef.current?.getBoundingClientRect()
+    if (rect && rect.bottom > 0 && rect.top < window.innerHeight) setNavigatedIntoView(true)
+  }, [direct])
+  const directEntrance = { opacity: 1, y: 0, transition: { type: false as const } }
 
   return (
     <motion.section
+      ref={sectionRef}
       id="download"
       tabIndex={-1}
       aria-labelledby="final-download-title"
       className="final-download"
       initial={{ opacity: 0, y: reduceMotion ? 0 : 12 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      animate={direct ? 'direct' : navigatedIntoView ? 'visible' : undefined}
+      whileInView={direct ? 'direct' : 'visible'}
+      variants={{ visible: { opacity: 1, y: 0 }, direct: directEntrance }}
       viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: reduceMotion ? 0.14 : 0.3, ease: 'easeOut' }}
     >
@@ -42,7 +56,9 @@ export function DownloadSection() {
       <motion.div
         className="final-wheel"
         initial={{ opacity: 0, scale: reduceMotion ? 1 : 0.94 }}
-        whileInView={{ opacity: 1, scale: 1 }}
+        animate={direct ? 'direct' : navigatedIntoView ? 'visible' : undefined}
+        whileInView={direct ? 'direct' : 'visible'}
+        variants={{ visible: { opacity: 1, scale: 1 }, direct: { opacity: 1, scale: 1, transition: { type: false } } }}
         viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: reduceMotion ? 0.14 : 0.3, delay: reduceMotion ? 0 : 0.1, ease: 'easeOut' }}
       >

@@ -101,4 +101,26 @@
     left: 0;
     pointer-events: none;
   }
+
+  /* Native scrollbar movement can paint before Motion's scroll frame. Only its
+     outer scene transforms are overridden; sector animations remain independent. */
+  :root[data-navigation-mode="direct"] .scroll-experience--enhanced {
+    & .scroll-track[data-direct-scene="hero"] {
+      & .scroll-wheel-motion { transform: none !important; --wheel-inverse-scale: 1 !important; }
+      & .scroll-hero-copy { opacity: 1 !important; transform: none !important; }
+      & .scroll-philosophy-copy { opacity: 0 !important; }
+      & figcaption { opacity: 1 !important; }
+    }
+    & .scroll-track[data-direct-scene="philosophy"] {
+      & .scroll-wheel-motion {
+        transform: translate(var(--direct-wheel-x, 0px), var(--direct-wheel-y, 0px)) scale(var(--direct-wheel-scale)) !important;
+        --wheel-inverse-scale: calc(1 / var(--direct-wheel-scale)) !important;
+      }
+      & .scroll-hero-copy { opacity: 0 !important; }
+      & .scroll-philosophy-copy { opacity: 1 !important; transform: none !important; }
+      & figcaption { opacity: 0 !important; }
+    }
+    & .wheel-preview-visual { opacity: 1 !important; transform: none !important; }
+    & .scroll-indicator { opacity: 0 !important; }
+  }
 }

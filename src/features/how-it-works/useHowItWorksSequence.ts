@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
 import { flushSync } from 'react-dom'
 import { howItWorksConfig, WheelGestureGate } from './howItWorksConfig'
 import { sectionFromHash, sectionNavigationEvent, type SectionId } from '../scroll/sectionNavigation'
+import { getNavigationState, subscribeNavigation } from '../scroll/directNavigation'
 
 type ScrollSide = 'before' | 'holding' | 'after'
 type NativeWheelScroll = { min: number; max: number; target: number; direction: number }
@@ -46,7 +47,7 @@ export function useHowItWorksSequence(
     let side: ScrollSide = previousY > top ? 'after' : 'before'
     let keyboardScroll = false
     let nativeWheelScroll: NativeWheelScroll | undefined
-    let bypass = Boolean(sectionFromHash() && sectionFromHash() !== 'how-it-works')
+    let bypass = getNavigationState().active || Boolean(sectionFromHash())
 
     function align() {
       // Коррекция разрешена только для входа, layout и незавершённого wheel-смещения.
@@ -129,7 +130,7 @@ export function useHowItWorksSequence(
     function prepareNavigation(id: SectionId) {
       const target = document.getElementById(id)
       if (!target) return
-      if (target === track || track!.contains(target)) {
+      if (!getNavigationState().active && (target === track || track!.contains(target))) {
         bypass = false
         enter(1, false)
         return
@@ -151,6 +152,11 @@ export function useHowItWorksSequence(
 
     function onScroll() {
       const position = window.scrollY
+      if (getNavigationState().active) {
+        previousY = position
+        side = position > top ? 'after' : 'before'
+        return
+      }
       const fromWheel = isNativeWheelScroll(position)
       if (side === 'holding') {
         if (Math.abs(position - top) > 0.5) {
@@ -292,6 +298,9 @@ export function useHowItWorksSequence(
     skip.current = () => {
       leaveForNavigation()
     }
+    const unsubscribeNavigation = subscribeNavigation(() => {
+      if (getNavigationState().active) leaveForNavigation()
+    })
     const observer = new ResizeObserver(measure)
     observer.observe(track)
     observer.observe(document.body)
@@ -314,6 +323,7 @@ export function useHowItWorksSequence(
     window.addEventListener('hashchange', onHashChange)
     return () => {
       cancelAnimationFrame(initialFrame)
+      unsubscribeNavigation()
       observer.disconnect()
       skip.current = () => {}
       setPinned(false)

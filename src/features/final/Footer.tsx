@@ -1,9 +1,12 @@
 import { Aperture, ArrowUp } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { LocalizedText } from '../../components/LocalizedText'
 import { SectionLink } from '../../components/SectionLink'
+import { microControlStyle } from '../../lib/microMotion'
 import './final-screen.css'
 
 export function Footer() {
+  const { t } = useTranslation()
   return (
     <footer className="final-footer site-container">
       <div className="final-footer-content">
@@ -27,7 +30,9 @@ export function Footer() {
       </div>
       <div className="final-footer-bottom">
         <p><LocalizedText textKey="final.footer.copyright" /></p>
-        <SectionLink target="top" className="final-back-top"><LocalizedText textKey="final.footer.backToTop" /><ArrowUp size={16} strokeWidth={1.5} aria-hidden="true" /></SectionLink>
+        <SectionLink target="top" smooth aria-label={t('final.footer.backToTop')} className="final-back-top" style={microControlStyle}>
+          <ArrowUp size={18} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
+        </SectionLink>
       </div>
     </footer>
   )

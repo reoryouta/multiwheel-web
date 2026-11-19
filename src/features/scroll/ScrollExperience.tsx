@@ -16,9 +16,9 @@ import './scroll-experience.css'
 export function ScrollExperience() {
   const scene = useScrollExperience()
   const howRef = useRef<HTMLDivElement>(null)
-  const handoff = useWheelHandoff(howRef, scene.enhanced)
+  const handoff = useWheelHandoff(howRef, scene.handoffEnabled)
   const [profile, setProfile] = useState<WheelProfile>(wheelProfiles[0])
-  const interactive = scene.state.interactive && !handoff.leaving
+  const interactive = scene.state.interactive && !handoff.leaving && !scene.direct
 
   return (
     <div

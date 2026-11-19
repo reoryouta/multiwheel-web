@@ -24,13 +24,14 @@ function FaqItem({ item }: { item: (typeof questions)[number] }) {
           style={microControlStyle}
         >
           <LocalizedText textKey={`final.faq.${item}.question`} />
-          <motion.span
-            className="final-faq-icon"
-            aria-hidden="true"
-            initial={false}
-            animate={{ rotate: open ? 180 : 0 }}
-            transition={{ duration: reduceMotion ? 0 : microMotion.hover, ease: microMotion.ease }}
-          ><ChevronDown size={18} strokeWidth={1.75} /></motion.span>
+          <span className="final-faq-toggle" aria-hidden="true">
+            <motion.span
+              className="final-faq-icon"
+              initial={false}
+              animate={{ rotate: open ? 180 : 0 }}
+              transition={{ duration: reduceMotion ? 0 : microMotion.hover, ease: microMotion.ease }}
+            ><ChevronDown size={16} strokeWidth={2} absoluteStrokeWidth /></motion.span>
+          </span>
         </button>
       </h3>
       <motion.div

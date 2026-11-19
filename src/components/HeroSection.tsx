@@ -1,8 +1,10 @@
 import { AppWindow } from 'lucide-react'
 import { motion, useReducedMotion, type Variants } from 'motion/react'
 import { LocalizedRegion } from './LocalizedText'
+import { useDirectNavigation } from '../features/scroll/useDirectNavigation'
 
 const reveal: Variants = {
+  direct: { opacity: 1, y: 0, transition: { type: false } },
   hidden: { opacity: 0, y: 14 },
   visible: {
     opacity: 1,
@@ -12,17 +14,19 @@ const reveal: Variants = {
 }
 
 const sequence: Variants = {
+  direct: { transition: { staggerChildren: 0 } },
   visible: { transition: { staggerChildren: 0.08 } },
 }
 
 export function HeroSection() {
   const shouldReduceMotion = useReducedMotion()
+  const { active: direct } = useDirectNavigation()
 
   return (
     <motion.section
       aria-labelledby="hero-title"
       initial={shouldReduceMotion ? false : 'hidden'}
-      animate="visible"
+      animate={direct ? 'direct' : 'visible'}
       variants={sequence}
       className="min-w-0"
     >
