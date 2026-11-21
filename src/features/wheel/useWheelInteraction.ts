@@ -46,11 +46,6 @@ export function useWheelInteraction(sectorIds: readonly string[], enabled = true
         hoveredId.current = id
         setActiveId(id)
       },
-      onPointerLeave: (event) => {
-        if (!enabled || event.pointerType === 'touch') return
-        hoveredId.current = null
-        setActiveId(focusedId.current)
-      },
       onFocus: () => {
         if (!enabled) return
         focusedId.current = id
@@ -120,6 +115,15 @@ export function useWheelInteraction(sectorIds: readonly string[], enabled = true
   return {
     rootRef,
     activeId: enabled && activeId && sectorIds.includes(activeId) ? activeId : null,
+    // A visual gap is still inside the working ring. Only leaving the entire
+    // ring (including its inner edge) restores the keyboard/touch selection.
+    ringProps: {
+      onPointerLeave: (event) => {
+        if (!enabled || event.pointerType === 'touch') return
+        hoveredId.current = null
+        setActiveId(focusedId.current)
+      },
+    } satisfies SVGProps<SVGGElement>,
     getSectorProps,
   }
 }

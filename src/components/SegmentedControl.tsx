@@ -3,6 +3,9 @@ import { motion } from 'motion/react'
 import { useId } from 'react'
 import { controlTransitions, microControlStyle, microMotion, useMotionPreference } from '../lib/microMotion'
 
+// All switchers use p-1 and a 1px border: keep their inset corners concentric.
+const insetRadius = 'max(0px, calc(var(--control-radius) - 0.25rem - 1px))'
+
 type SegmentedControlProps = {
   items: readonly { id: string; label: string; accessibleLabel?: string; lang?: string; icon?: LucideIcon }[]
   selectedId: string
@@ -30,8 +33,8 @@ export function SegmentedControl({ items, selectedId, onSelect, label, controlsI
           initial={false}
           animate={{ x: `calc(${selectedIndex * 100}% + ${selectedIndex * 0.25}rem)` }}
           transition={{ duration: reduceMotion ? 0 : microMotion.selection, ease: microMotion.ease }}
-          style={{ width: `calc((100% - 0.5rem - ${(items.length - 1) * 0.25}rem) / ${items.length})` }}
-          className="pointer-events-none absolute inset-y-1 left-1 -z-10 rounded-md bg-accent/20"
+          style={{ width: `calc((100% - 0.5rem - ${(items.length - 1) * 0.25}rem) / ${items.length})`, borderRadius: insetRadius }}
+          className="pointer-events-none absolute inset-y-1 left-1 -z-10 bg-accent/20"
         />
       )}
       {items.map(({ id, label: itemLabel, accessibleLabel, lang, icon: Icon }) => (
@@ -49,8 +52,8 @@ export function SegmentedControl({ items, selectedId, onSelect, label, controlsI
           whileFocus={{ color: 'var(--text-primary)' }}
           whileTap={reduceMotion ? undefined : { scale: 0.98 }}
           transition={controlTransitions(reduceMotion)}
-          style={microControlStyle}
-          className={`micro-control relative isolate flex cursor-pointer items-center justify-center rounded-md text-xs font-medium ${buttonClassName}`}
+          style={{ ...microControlStyle, borderRadius: insetRadius }}
+          className={`micro-control relative isolate flex cursor-pointer items-center justify-center text-xs font-medium ${buttonClassName}`}
         >
           {!horizontal && selectedId === id && (
             <motion.span
@@ -59,10 +62,11 @@ export function SegmentedControl({ items, selectedId, onSelect, label, controlsI
               layoutId={reduceMotion ? undefined : selectionId}
               initial={false}
               transition={{ duration: reduceMotion ? 0 : microMotion.selection, ease: microMotion.ease }}
-              className="pointer-events-none absolute inset-0 -z-10 rounded-md bg-accent/20"
+              style={{ borderRadius: insetRadius }}
+              className="pointer-events-none absolute inset-0 -z-10 bg-accent/20"
             />
           )}
-          {Icon && <Icon size={14} strokeWidth={1.5} aria-hidden="true" />}
+          {Icon && <Icon size={14} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />}
           {itemLabel}
         </motion.button>
       ))}

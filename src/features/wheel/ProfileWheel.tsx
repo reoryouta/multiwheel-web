@@ -14,7 +14,7 @@ export function ProfileWheel({ profile, hintId, interactive = true }: ProfileWhe
   const { t } = useTranslation()
   const isPresent = useIsPresent()
   const shouldReduceMotion = useReducedMotion()
-  const { rootRef, activeId, getSectorProps } = useWheelInteraction(profile.actions.map(({ id }) => id), interactive)
+  const { rootRef, activeId, ringProps, getSectorProps } = useWheelInteraction(profile.actions.map(({ id }) => id), interactive)
   const actions = profile.actions.map((action) => ({
     ...action,
     label: t(action.labelKey),
@@ -36,6 +36,7 @@ export function ProfileWheel({ profile, hintId, interactive = true }: ProfileWhe
       <WheelView
         actions={actions}
         activeId={activeId}
+        ringProps={ringProps}
         getSectorProps={getSectorProps}
         title={t('hero.wheel.profileTitle', { profile: t(profile.nameKey) })}
         description={`${t('hero.wheel.description')} ${t(profile.descriptionKey)}`}

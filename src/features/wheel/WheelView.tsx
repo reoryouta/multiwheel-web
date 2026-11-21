@@ -8,6 +8,7 @@ type WheelViewProps = {
   mode?: 'interactive' | 'demo'
   actions: readonly (WheelAction & { label: string; accessibleLabel: string })[]
   activeId: string | null
+  ringProps?: SVGProps<SVGGElement>
   getSectorProps: (id: string) => SVGProps<SVGGElement>
   title: string
   description: string
@@ -15,11 +16,11 @@ type WheelViewProps = {
   brand: string
 }
 
-export function WheelView({ mode = 'interactive', actions, activeId, getSectorProps, title, description, hintId, brand }: WheelViewProps) {
+export function WheelView({ mode = 'interactive', actions, activeId, ringProps, getSectorProps, title, description, hintId, brand }: WheelViewProps) {
   const id = useId()
   const shouldReduceMotion = useReducedMotion()
   const duration = shouldReduceMotion ? 0 : 0.14
-  const { size, center, centerRadius, outerRingRadius, innerRingRadius } = wheelGeometry
+  const { size, center, centerRadius, outerRingRadius, innerRingRadius, innerRadius, outerRadius } = wheelGeometry
   const activeAction = actions.find((action) => action.id === activeId)
 
   return (
@@ -49,63 +50,79 @@ export function WheelView({ mode = 'interactive', actions, activeId, getSectorPr
           <circle cx={center} cy={center} r={innerRingRadius} fill="none" stroke="var(--border)" strokeOpacity="0.35" />
         </g>
 
-        {actions.map((action, index) => {
-          const { path, iconPosition } = getSectorGeometry(index, actions.length)
-          const isActive = action.id === activeId
-          const Icon = action.icon
+        <g {...ringProps}>
+          {mode === 'interactive' && (
+            // Invisible annulus connects the hit areas across the visual gaps.
+            // Its inner/outer edges come from the existing, unscaled geometry.
+            <circle
+              cx={center}
+              cy={center}
+              r={(innerRadius + outerRadius) / 2}
+              fill="none"
+              stroke="transparent"
+              strokeWidth={outerRadius - innerRadius}
+              pointerEvents="stroke"
+              aria-hidden="true"
+            />
+          )}
+          {actions.map((action, index) => {
+            const { path, iconPosition } = getSectorGeometry(index, actions.length)
+            const isActive = action.id === activeId
+            const Icon = action.icon
 
-          return (
-            <g
-              key={action.id}
-              {...getSectorProps(action.id)}
-              role={mode === 'demo' ? undefined : 'button'}
-              aria-label={mode === 'demo' ? undefined : action.accessibleLabel}
-              aria-describedby={mode === 'demo' ? undefined : hintId}
-              data-sector-id={action.id}
-              data-active={isActive}
-              className={mode === 'demo' ? 'wheel-sector' : 'wheel-sector cursor-pointer outline-none'}
-            >
-              {/* Неподвижная область попадания исключает дрожание на краях при увеличении. */}
-              <path d={path} fill="transparent" pointerEvents="all" />
-              <motion.g
-                aria-hidden="true"
-                pointerEvents="none"
-                initial={false}
-                animate={{ scale: isActive && !shouldReduceMotion ? 1.018 : 1 }}
-                transition={{ duration, ease: 'easeOut' }}
-                style={{ transformOrigin: `${center}px ${center}px` }}
+            return (
+              <g
+                key={action.id}
+                {...getSectorProps(action.id)}
+                role={mode === 'demo' ? undefined : 'button'}
+                aria-label={mode === 'demo' ? undefined : action.accessibleLabel}
+                aria-describedby={mode === 'demo' ? undefined : hintId}
+                data-sector-id={action.id}
+                data-active={isActive}
+                className={mode === 'demo' ? 'wheel-sector' : 'wheel-sector cursor-pointer outline-none'}
               >
-                <path d={path} fill={`url(#${id}-surface)`} stroke="var(--border)" strokeOpacity="0.8" />
-                <motion.path
-                  d={path}
-                  fill={`url(#${id}-accent)`}
-                  stroke="var(--accent)"
-                  strokeOpacity="0.55"
-                  initial={false}
-                  animate={{ opacity: isActive ? 1 : 0 }}
-                  transition={{ duration }}
-                />
+                {/* Неподвижная область попадания исключает дрожание на краях при увеличении. */}
+                <path d={path} fill="transparent" pointerEvents="all" />
                 <motion.g
+                  aria-hidden="true"
+                  pointerEvents="none"
                   initial={false}
-                  animate={{ color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)' }}
-                  transition={{ duration }}
+                  animate={{ scale: isActive && !shouldReduceMotion ? 1.018 : 1 }}
+                  transition={{ duration, ease: 'easeOut' }}
+                  style={{ transformOrigin: `${center}px ${center}px` }}
                 >
-                  <Icon x={iconPosition.x - 12} y={iconPosition.y - 12} size={24} strokeWidth={1.5} />
+                  <path d={path} fill={`url(#${id}-surface)`} stroke="var(--border)" strokeOpacity="0.8" />
+                  <motion.path
+                    d={path}
+                    fill={`url(#${id}-accent)`}
+                    stroke="var(--accent)"
+                    strokeOpacity="0.55"
+                    initial={false}
+                    animate={{ opacity: isActive ? 1 : 0 }}
+                    transition={{ duration }}
+                  />
+                  <motion.g
+                    initial={false}
+                    animate={{ color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)' }}
+                    transition={{ duration }}
+                  >
+                    <Icon x={iconPosition.x - 12} y={iconPosition.y - 12} size={24} strokeWidth={1.5} />
+                  </motion.g>
                 </motion.g>
-              </motion.g>
-              <path
-                d={path}
-                className="wheel-sector-focus"
-                fill="none"
-                stroke="var(--accent)"
-                strokeWidth="2"
-                strokeDasharray="3 3"
-                pointerEvents="none"
-                aria-hidden="true"
-              />
-            </g>
-          )
-        })}
+                <path
+                  d={path}
+                  className="wheel-sector-focus"
+                  fill="none"
+                  stroke="var(--accent)"
+                  strokeWidth="2"
+                  strokeDasharray="3 3"
+                  pointerEvents="none"
+                  aria-hidden="true"
+                />
+              </g>
+            )
+          })}
+        </g>
 
         <g pointerEvents="none" aria-hidden="true">
           <circle cx={center} cy={center} r={centerRadius} fill="var(--background)" stroke="var(--border)" />
