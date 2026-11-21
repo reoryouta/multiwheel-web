@@ -4,6 +4,7 @@ type DirectSource = 'link' | 'scrollbar' | 'history' | 'native'
 type NavigationState = { active: boolean; source?: DirectSource; target?: string; session: number }
 const presentation: NavigationState = { active: false, session: 0 }
 let state = presentation
+let settledLinkY: number | undefined
 const listeners = new Set<() => void>()
 const positions = new Set<() => void>()
 
@@ -18,6 +19,7 @@ export function subscribeDirectPosition(listener: () => void) {
 }
 
 export function beginDirectNavigation(source: DirectSource, target?: string) {
+  settledLinkY = undefined
   state = { active: true, source, target, session: state.session + 1 }
   // CSS applies the stable composition before the browser's next native scroll paint.
   document.documentElement.dataset.navigationMode = 'direct'
@@ -27,6 +29,7 @@ export function beginDirectNavigation(source: DirectSource, target?: string) {
 
 export function endDirectNavigation(session = state.session) {
   if (!state.active || session !== state.session) return
+  if (state.source === 'link') settledLinkY = window.scrollY
   state = { active: false, session }
   listeners.forEach((listener) => listener())
   // Let Motion render the synchronized values before removing the native-scroll override.
@@ -85,7 +88,11 @@ export function observeNavigationInput() {
     if (state.source === 'scrollbar' || state.source === 'native') afterNativeJump()
   }
   const onScroll = () => {
-    if (!state.active && input === 'native') beginDirectNavigation('native')
+    // The final scrollTo can deliver its scroll event after completion or cancellation.
+    // A native move to a different position still takes ownership immediately.
+    const linkPosition = settledLinkY
+    settledLinkY = undefined
+    if (!state.active && input === 'native' && window.scrollY !== linkPosition) beginDirectNavigation('native')
     if (state.active) positions.forEach((listener) => listener())
   }
   const onScrollEnd = () => {

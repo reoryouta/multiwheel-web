@@ -37,7 +37,7 @@ export function ScrollExperience() {
       style={{ '--scroll-distance': scrollSceneConfig.travelDistance } as CSSProperties}
     >
       <div ref={trackRef} id="about" tabIndex={-1} aria-labelledby="hero-title" className="scroll-track outline-none">
-        <div className="scroll-stage">
+        <motion.div className="scroll-stage" style={{ top: scene.returnInset }}>
           <div className="site-container scroll-stage-content">
             <motion.div
               ref={heroRef}
@@ -88,7 +88,7 @@ export function ScrollExperience() {
               <PhilosophySection />
             </motion.div>
           </div>
-        </div>
+        </motion.div>
       </div>
       <HowScene trackRef={howRef} profile={profile} />
       <ContextScene />

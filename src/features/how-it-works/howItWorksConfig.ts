@@ -14,14 +14,14 @@ export class WheelGestureGate {
   mode: 'pending' | 'consumed' | 'released' = 'pending'
 
   feed(delta: number, now: number) {
-    if (now - this.lastTime > howItWorksConfig.gestureQuietMs) {
-      this.mode = 'pending'
-      this.distance = 0
-      this.direction = 0
+    const direction = Math.sign(delta)
+    // Outside the scene only the outward tail may bypass the entry boundary.
+    if (now - this.lastTime > howItWorksConfig.gestureQuietMs ||
+        (this.mode === 'released' && direction !== this.direction)) {
+      this.reset()
     }
     this.lastTime = now
     if (this.mode !== 'pending') return 0
-    const direction = Math.sign(delta)
     if (direction !== this.direction) this.distance = 0
     this.direction = direction
     this.distance += Math.abs(delta)
@@ -31,6 +31,12 @@ export class WheelGestureGate {
   consume(now: number) {
     this.lastTime = now
     this.mode = 'consumed'
+  }
+
+  release(direction: number, now: number) {
+    this.direction = direction
+    this.lastTime = now
+    this.mode = 'released'
   }
 
   reset() {

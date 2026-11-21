@@ -75,8 +75,7 @@ export function useHowItWorksSequence(
     function release(direction: number) {
       keyboardScroll = false
       side = direction > 0 ? 'after' : 'before'
-      gesture.consume(performance.now())
-      gesture.mode = 'released'
+      gesture.release(direction, performance.now())
       previousY = window.scrollY
       flushSync(() => setPinned(false))
     }

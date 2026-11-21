@@ -21,6 +21,7 @@ export function useScrollExperience({ trackRef, heroRef, wheelAnchorRef, wheelVi
   const enhanced = isDesktop && !prefersReducedMotion
   const navigation = useDirectNavigation()
   const progress = useMotionValue(0)
+  const returnInset = useMotionValue(0)
   const resumeAnchor = useRef<ProgressAnchor | undefined>(undefined)
   const [rebased, setRebased] = useState(false)
   const travelX = useMotionValue(0)
@@ -111,7 +112,24 @@ export function useScrollExperience({ trackRef, heroRef, wheelAnchorRef, wheelVi
     let trackTop = 0
     let trackHeight = 0
     let viewportHeight = 0
+    let releaseAtY = 0
     const rawPosition = () => Math.max(0, Math.min(1, (window.scrollY - trackTop) / Math.max(1, trackHeight - viewportHeight)))
+    const syncReturnInset = () => {
+      const navigation = getNavigationState()
+      const returning = navigation.source === 'link' && navigation.target === 'top'
+      if (!returning && !releaseAtY) return
+
+      const y = window.scrollY
+      const stickyEnd = trackTop + trackHeight - viewportHeight
+      // Carry the header space through the whole sticky interval, so Hero settles once.
+      const landingTop = trackTop * Math.max(0, 1 - y / Math.max(1, stickyEnd))
+      if (returning) releaseAtY = landingTop > 0 ? y + landingTop : 0
+      else if (navigation.active || y <= 0 || y >= releaseAtY) releaseAtY = 0
+
+      // On interruption keep the current position. Downward input uses up the
+      // remaining offset 1:1 until normal sticky positioning takes over.
+      returnInset.set(Math.max(0, Math.min(landingTop, releaseAtY - y)))
+    }
     const measure = () => {
       const top = track.getBoundingClientRect().top + window.scrollY
       const height = track.offsetHeight
@@ -120,6 +138,7 @@ export function useScrollExperience({ trackRef, heroRef, wheelAnchorRef, wheelVi
       trackTop = top
       trackHeight = height
       viewportHeight = viewport
+      syncReturnInset()
       // Обновляем шкалу при изменении геометрии сцены или окна.
       syncProgress(rawPosition())
     }
@@ -128,6 +147,7 @@ export function useScrollExperience({ trackRef, heroRef, wheelAnchorRef, wheelVi
       setRebased(false)
     }
     const synchronize = () => {
+      syncReturnInset()
       const raw = rawPosition()
       if (getNavigationState().active) {
         clearAnchor()
@@ -143,6 +163,7 @@ export function useScrollExperience({ trackRef, heroRef, wheelAnchorRef, wheelVi
       }
     }
     const onScroll = () => {
+      syncReturnInset()
       if (!resumeAnchor.current || getNavigationState().active) return
       const raw = rawPosition()
       if ((raw === 0 && progress.get() === 0) || window.scrollY >= trackTop + trackHeight) {
@@ -158,18 +179,20 @@ export function useScrollExperience({ trackRef, heroRef, wheelAnchorRef, wheelVi
     window.addEventListener('resize', measure)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => {
+      returnInset.set(0)
       unsubscribe()
       unsubscribePosition()
       observer.disconnect()
       window.removeEventListener('resize', measure)
       window.removeEventListener('scroll', onScroll)
     }
-  }, [enhanced, trackRef, progress, syncProgress])
+  }, [enhanced, trackRef, progress, returnInset, syncProgress])
 
   return {
     enhanced,
     direct: navigation.active,
     handoffEnabled: enhanced && !navigation.active && !rebased,
+    returnInset,
     state: enhanced ? sceneState : flowSceneState,
     heroStyle: enhanced ? { opacity: heroOpacity, y: heroY } : { opacity: 1, y: 0 },
     wheelStyle: enhanced
