@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import { useMotionValue, useMotionValueEvent, useScroll, useTransform } from 'motion/react'
 import { flowSceneState, getSceneState, scrollSceneConfig as config } from './scrollSceneConfig'
 import { useMediaQuery } from './useMediaQuery'
@@ -8,11 +8,14 @@ import { useDirectNavigation } from './useDirectNavigation'
 
 const smoothStep = (value: number) => value * value * (3 - 2 * value)
 
-export function useScrollExperience() {
-  const trackRef = useRef<HTMLDivElement>(null)
-  const heroRef = useRef<HTMLDivElement>(null)
-  const wheelAnchorRef = useRef<HTMLDivElement>(null)
-  const wheelVisualRef = useRef<HTMLDivElement>(null)
+type SceneRefs = {
+  trackRef: RefObject<HTMLDivElement | null>
+  heroRef: RefObject<HTMLDivElement | null>
+  wheelAnchorRef: RefObject<HTMLDivElement | null>
+  wheelVisualRef: RefObject<HTMLDivElement | null>
+}
+
+export function useScrollExperience({ trackRef, heroRef, wheelAnchorRef, wheelVisualRef }: SceneRefs) {
   const isDesktop = useMediaQuery(config.desktopQuery)
   const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
   const enhanced = isDesktop && !prefersReducedMotion
@@ -25,7 +28,6 @@ export function useScrollExperience() {
   const { scrollYProgress } = useScroll({
     target: trackRef,
     offset: ['start start', 'end end'],
-    trackContentSize: true,
   })
 
   const movement = useTransform(progress, [...config.wheelMove], [0, 1], { ease: smoothStep })
@@ -61,18 +63,18 @@ export function useScrollExperience() {
     const visual = direct.active
       ? (direct.target === 'top' || direct.target === 'about' || raw < 0.5 ? 0 : 1)
       : resumeProgress(raw, resumeAnchor.current)
+    if (direct.active && trackRef.current) {
+      const scene = visual === 0 ? 'hero' : 'philosophy'
+      if (trackRef.current.dataset.directScene !== scene) trackRef.current.dataset.directScene = scene
+    }
+    if (progress.get() === visual) return
     progress.set(visual)
-    if (direct.active && trackRef.current) trackRef.current.dataset.directScene = visual === 0 ? 'hero' : 'philosophy'
     updateAccessibility(visual)
-  }, [progress, updateAccessibility])
+  }, [progress, trackRef, updateAccessibility])
 
   useMotionValueEvent(scrollYProgress, 'change', (raw) => {
     if (enhanced && !getNavigationState().active) syncProgress(raw)
   })
-
-  useEffect(() => {
-    if (enhanced) syncProgress(scrollYProgress.get())
-  }, [enhanced, scrollYProgress, syncProgress])
 
   useLayoutEffect(() => {
     if (!enhanced) return
@@ -100,7 +102,7 @@ export function useScrollExperience() {
     observer.observe(anchor)
     observer.observe(visual)
     return () => observer.disconnect()
-  }, [enhanced, travelX, centerYCorrection])
+  }, [enhanced, heroRef, wheelAnchorRef, wheelVisualRef, trackRef, travelX, centerYCorrection])
 
   useLayoutEffect(() => {
     if (!enhanced) return
@@ -108,10 +110,18 @@ export function useScrollExperience() {
     if (!track) return
     let trackTop = 0
     let trackHeight = 0
-    const rawPosition = () => Math.max(0, Math.min(1, (window.scrollY - trackTop) / Math.max(1, trackHeight - window.innerHeight)))
+    let viewportHeight = 0
+    const rawPosition = () => Math.max(0, Math.min(1, (window.scrollY - trackTop) / Math.max(1, trackHeight - viewportHeight)))
     const measure = () => {
-      trackTop = track.getBoundingClientRect().top + window.scrollY
-      trackHeight = track.offsetHeight
+      const top = track.getBoundingClientRect().top + window.scrollY
+      const height = track.offsetHeight
+      const viewport = window.innerHeight
+      if (top === trackTop && height === trackHeight && viewport === viewportHeight) return
+      trackTop = top
+      trackHeight = height
+      viewportHeight = viewport
+      // Обновляем шкалу при изменении геометрии сцены или окна.
+      syncProgress(rawPosition())
     }
     const clearAnchor = () => {
       resumeAnchor.current = undefined
@@ -141,7 +151,6 @@ export function useScrollExperience() {
       }
     }
     measure()
-    if (getNavigationState().active) syncProgress(rawPosition())
     const unsubscribe = subscribeNavigation(synchronize)
     const unsubscribePosition = subscribeDirectPosition(() => syncProgress(rawPosition()))
     const observer = new ResizeObserver(measure)
@@ -155,10 +164,10 @@ export function useScrollExperience() {
       window.removeEventListener('resize', measure)
       window.removeEventListener('scroll', onScroll)
     }
-  }, [enhanced, progress, syncProgress])
+  }, [enhanced, trackRef, progress, syncProgress])
 
   return {
-    trackRef, heroRef, wheelAnchorRef, wheelVisualRef, enhanced,
+    enhanced,
     direct: navigation.active,
     handoffEnabled: enhanced && !navigation.active && !rebased,
     state: enhanced ? sceneState : flowSceneState,

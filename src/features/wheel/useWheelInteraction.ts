@@ -8,6 +8,9 @@ export function useWheelInteraction(sectorIds: readonly string[], enabled = true
   const [activeId, setActiveId] = useState<string | null>(null)
   const [tabStopId, setTabStopId] = useState(sectorIds[0])
 
+  // При отключении снимаем выбор до обновления DOM, сохраняя позицию Tab.
+  if (!enabled && activeId !== null) setActiveId(null)
+
   // Только один сектор входит в обычный порядок Tab. Остальные доступны стрелками.
   const currentTabStop = sectorIds.includes(tabStopId) ? tabStopId : sectorIds[0]
 
@@ -15,12 +18,13 @@ export function useWheelInteraction(sectorIds: readonly string[], enabled = true
     if (enabled) return
     hoveredId.current = null
     focusedId.current = null
-    setActiveId(null)
     const element = document.activeElement
     if (element instanceof SVGElement && rootRef.current?.contains(element)) element.blur()
   }, [enabled])
 
   useEffect(() => {
+    if (!enabled) return
+
     function clearOutside(event: PointerEvent) {
       if (event.target instanceof Node && !rootRef.current?.contains(event.target)) {
         hoveredId.current = null
@@ -31,7 +35,7 @@ export function useWheelInteraction(sectorIds: readonly string[], enabled = true
 
     document.addEventListener('pointerdown', clearOutside)
     return () => document.removeEventListener('pointerdown', clearOutside)
-  }, [])
+  }, [enabled])
 
   function getSectorProps(id: string): SVGProps<SVGGElement> {
     return {

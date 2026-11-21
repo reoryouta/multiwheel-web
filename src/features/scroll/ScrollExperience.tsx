@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { useRef, useState, type CSSProperties } from 'react'
+import { memo, useRef, useState, type CSSProperties } from 'react'
 import { HeroSection } from '../../components/HeroSection'
 import { PhilosophySection } from '../../components/PhilosophySection'
 import { WheelPreview } from '../../components/WheelPreview'
@@ -13,8 +13,17 @@ import { useWheelHandoff } from '../how-it-works/useWheelHandoff'
 import { wheelProfiles, type WheelProfile } from '../wheel/wheelProfiles'
 import './scroll-experience.css'
 
+// Изменение доступности Hero не требует обновления следующих сцен.
+const HowScene = memo(HowItWorksSection)
+const ContextScene = memo(ContextExperience)
+const FinalScene = memo(FinalScreen)
+
 export function ScrollExperience() {
-  const scene = useScrollExperience()
+  const trackRef = useRef<HTMLDivElement>(null)
+  const heroRef = useRef<HTMLDivElement>(null)
+  const wheelAnchorRef = useRef<HTMLDivElement>(null)
+  const wheelVisualRef = useRef<HTMLDivElement>(null)
+  const scene = useScrollExperience({ trackRef, heroRef, wheelAnchorRef, wheelVisualRef })
   const howRef = useRef<HTMLDivElement>(null)
   const handoff = useWheelHandoff(howRef, scene.handoffEnabled)
   const [profile, setProfile] = useState<WheelProfile>(wheelProfiles[0])
@@ -27,11 +36,11 @@ export function ScrollExperience() {
       data-scroll-phase={handoff.leaving ? 'how-it-works' : scene.state.phase}
       style={{ '--scroll-distance': scrollSceneConfig.travelDistance } as CSSProperties}
     >
-      <div ref={scene.trackRef} id="about" tabIndex={-1} aria-labelledby="hero-title" className="scroll-track outline-none">
+      <div ref={trackRef} id="about" tabIndex={-1} aria-labelledby="hero-title" className="scroll-track outline-none">
         <div className="scroll-stage">
           <div className="site-container scroll-stage-content">
             <motion.div
-              ref={scene.heroRef}
+              ref={heroRef}
               initial={false}
               style={scene.heroStyle}
               aria-hidden={scene.state.heroHidden}
@@ -41,7 +50,7 @@ export function ScrollExperience() {
               <HeroSection />
             </motion.div>
 
-            <div ref={scene.wheelAnchorRef} className="scroll-wheel-anchor">
+            <div ref={wheelAnchorRef} className="scroll-wheel-anchor">
               {/* Этот контейнер двигается целиком. SVG-секторы анимируются внутри него. */}
               <motion.div
                 initial={false}
@@ -50,7 +59,7 @@ export function ScrollExperience() {
                 className="scroll-wheel-motion"
               >
                 <WheelPreview
-                  visualRef={scene.wheelVisualRef}
+                  visualRef={wheelVisualRef}
                   interactive={interactive}
                   visualStyle={handoff.style}
                   onProfileChange={setProfile}
@@ -81,9 +90,9 @@ export function ScrollExperience() {
           </div>
         </div>
       </div>
-      <HowItWorksSection trackRef={howRef} profile={profile} />
-      <ContextExperience />
-      <FinalScreen />
+      <HowScene trackRef={howRef} profile={profile} />
+      <ContextScene />
+      <FinalScene />
     </div>
   )
 }
