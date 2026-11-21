@@ -30,7 +30,7 @@ export function HowItWorksSection({ trackRef, profile }: { trackRef: RefObject<H
           <a href="#how-it-works-end" onClick={skipSequence} className="how-skip sr-only focus:not-sr-only"><LocalizedText textKey="howItWorks.skip" /></a>
           <div className="site-container how-layout">
             <div className="how-wheel-slot"><HowItWorksWheel profile={profile} step={step} reduceMotion={reduceMotion} /></div>
-            <div className="min-w-0">
+            <div className="how-controls min-w-0">
               <div className="how-steps">
                 <div className="how-rail" aria-hidden="true">
                   <motion.div initial={false} animate={{ scaleY: Math.max(0, step - 1) / 2 }} transition={{ duration: reduceMotion ? 0 : howItWorksConfig.duration, ease: microMotion.ease }} className="how-rail-fill" />
